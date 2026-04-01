@@ -448,7 +448,7 @@ const PAGES={create:CreatePage,analytics:AnalyticsPage,competitors:CompetitorPag
    LOGIN / REGISTER PAGE
    ======================================================== */
 function LoginPage({onLogin}){
-  const MASTER_PIN='2424';
+  const MASTER_PIN='1111';
   const [authType,setAuthType]=useState('user'); // 'master' or 'user'
   const [mode,setMode]=useState('login');
   const [email,setEmail]=useState('');
@@ -560,7 +560,7 @@ function LoginPage({onLogin}){
             <div style={{flex:1,height:1,background:'#373A40'}}/><span style={{fontSize:11,color:'#909296'}}>または</span><div style={{flex:1,height:1,background:'#373A40'}}/>
           </div>
           <button onClick={demoLogin} disabled={busy} style={{...LS.btn,background:'linear-gradient(135deg,#37b24d,#0ca678)',opacity:busy?.7:1,marginBottom:12}}>
-            {I.play(14)} デモェカウントで体験する
+            {I.play(14)} デモアカウントで体験する
           </button>
           <button onClick={()=>{setMode(mode==='login'?'register':'login');setErr('');}} style={{...LS.btn,background:'transparent',border:'1px solid #373A40',fontSize:13,fontWeight:500}}>
             {mode==='login'?'アカウントをお持ちでない方はこちら':'既にアカウントをお持ちの方はこちら'}
