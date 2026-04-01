@@ -56,7 +56,7 @@ const I={
 
 /* ===== Colors / Platforms ===== */
 const P=[
-  {id:'x',name:'X',color:'#1da1f2',label:'ð'},
+  {id:'x',name:'X',color:'#1da1f2',label:'𝕏'},
   {id:'instagram',name:'Instagram',color:'#E1306C',label:'IG'},
   {id:'tiktok',name:'TikTok',color:'#00f2ea',label:'TT'},
   {id:'youtube',name:'YouTube',color:'#FF0000',label:'YT'},
@@ -97,17 +97,17 @@ function CreatePage(){
 
   const doGen=async()=>{setGenBusy(true);await new Promise(r=>setTimeout(r,1600));
     const pool=[
-      `AIæä»£ã®ãã¼ã±ãã£ã³ã°ã¯ãå±æÃãã¼ã¿ããã­ã¼ã\n\nãã©ã­ã¯ã¼ãæ±ãã¦ããã®ã¯å®ç§ãªæå ±ã§ã¯ãªããå±æã§ããã¹ãã¼ãªã¼ã\n\nãã¼ã¿åæã§æé©ãªã¿ã¤ãã³ã°ãè¦æ¥µããææã«é¿ãã³ã³ãã³ããå±ããã\n\n#ãã¼ã±ãã£ã³ã° #AI #SNSéç¨`,
-      `ãã¯ãããããã¾ãï¼\n\nä»æ¥ã®å­¦ã³: ãç¶ç¶ã¯åãªããã¯æ¬å½ã ã£ãã\n\n90æ¥éæ¯æ¥æç¨¿ãç¶ããçµæ:\nã»ãã©ã­ã¯ã¼ +3,200äºº\nã»ã¨ã³ã²ã¼ã¸ç 2.1% â 4.8%\nã»DMåãåãã é±30ä»¶\n\n#ææ´» #ç¶ç¶å`,
-      `ãä¿å­æ¨å¥¨ãSNSåç»ã§ä¼¸ã³ãã³ã5é¸\n\n1. æåã®1ç§ã§æ­¢ãã\n2. ãã­ããã¯å¤§ããå¤ªã\n3. BGMã¯æµè¡ããä½¿ã\n4. 15ç§ä»¥åã«ã¾ã¨ãã\n5. CTAãå¿ãå¥ãã\n\n#åç»ãã¼ã±ãã£ã³ã° #TikTok #Reels`,
-      `${topic||'ãã¸ãã¹'}ã«ããã¦æãå¤§åãªã®ã¯ãä¿¡é ¼ã®ç©ã¿éã­ãã\n\næ´¾æãªããºã¯ä¸ç¬ã§æ¶ããããæ¯æ¥ã®å°ããªä¾¡å¤æä¾ã¯ãã©ã­ã¯ã¼ã®å¿ã«æ®ãã\n\n#${topic||'ãã¸ãã¹'} #ãã©ã³ãã£ã³ã°`,
+      `AI時代のマーケティングは「共感×データ」がキー。\n\nフォロワーが求めているのは完璧な情報ではなく、共感できるストーリー。\n\nデータ分析で最適なタイミングを見極め、感情に響くコンテンツを届ける。\n\n#マーケティング #AI #SNS運用`,
+      `おはようございます！\n\n今日の学び: 「継続は力なり」は本当だった。\n\n90日間毎日投稿を続けた結果:\n・フォロワー +3,200人\n・エンゲージ率 2.1% → 4.8%\n・DM問い合わせ 週30件\n\n#朝活 #継続力`,
+      `【保存推奨】SNS動画で伸びるコツ5選\n\n1. 最初の1秒で止める\n2. テロップは大きく太く\n3. BGMは流行りを使う\n4. 15秒以内にまとめる\n5. CTAを必ず入れる\n\n#動画マーケティング #TikTok #Reels`,
+      `${topic||'ビジネス'}において最も大切なのは「信頼の積み重ね」。\n\n派手なバズは一瞬で消えるが、毎日の小さな価値提供はフォロワーの心に残る。\n\n#${topic||'ビジネス'} #ブランディング`,
     ];setContent(pool[~~(Math.random()*pool.length)]);setGenBusy(false);setStep('vid');};
 
   const doVid=async()=>{setVidSt('proc');await new Promise(r=>setTimeout(r,2200));setVidSt('ready');setStep('pub');};
 
   const doPub=async()=>{if(!selP.length)return;setPubBusy(true);const st={};selP.forEach(id=>{st[id]='pub';});setPubSt(st);
     for(const id of selP){await new Promise(r=>setTimeout(r,700+Math.random()*1e3));setPubSt(p=>({...p,[id]:Math.random()>.1?'ok':'fail'}));}
-    setPubBusy(false);setHist(p=>[{id:Date.now(),t:content.substring(0,35)+'â¦',pl:selP,ts:new Date().toLocaleTimeString('ja-JP')},...p]);};
+    setPubBusy(false);setHist(p=>[{id:Date.now(),t:content.substring(0,35)+'…',pl:selP,ts:new Date().toLocaleTimeString('ja-JP')},...p]);};
 
   const tog=id=>setSelP(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
   const reset=()=>{setStep('gen');setContent('');setVidSt('idle');setSelP([]);setPubSt({});setTopic('');};
@@ -117,15 +117,15 @@ function CreatePage(){
   return <div style={{height:'100%',display:'flex',flexDirection:'column'}}>
     {/* top */}
     <div style={S.topbar}>
-      <h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.spark(18)}</span> ã³ã³ãã³ãçæ & ä¸æ¬åºç¨¿</h2>
+      <h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.spark(18)}</span> コンテンツ生成 & 一括出稿</h2>
       <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:10}}>
         <div style={{display:'flex',alignItems:'center',gap:4}}>
           {['gen','vid','pub'].map((s,i)=><React.Fragment key={s}>
             {i>0&&<div style={{width:18,height:2,background:stI>=i?'#5c7cfa':'#373A40'}}/>}
-            <div style={{padding:'2px 10px',borderRadius:99,fontSize:11,fontWeight:600,background:step===s?'#5c7cfa':stI>i?'rgba(92,124,250,.2)':'#2C2E33',color:step===s?'#fff':stI>i?'#748ffc':'#909296'}}>{i+1} {['è¨äºçæ','åç»çæ','åºç¨¿'][i]}</div>
+            <div style={{padding:'2px 10px',borderRadius:99,fontSize:11,fontWeight:600,background:step===s?'#5c7cfa':stI>i?'rgba(92,124,250,.2)':'#2C2E33',color:step===s?'#fff':stI>i?'#748ffc':'#909296'}}>{i+1} {['記事生成','動画生成','出稿'][i]}</div>
           </React.Fragment>)}
         </div>
-        <button onClick={reset} style={S.btn('#2C2E33',{fontSize:11,padding:'4px 10px',border:'1px solid #373A40'})}>{I.refresh(11)} ãªã»ãã</button>
+        <button onClick={reset} style={S.btn('#2C2E33',{fontSize:11,padding:'4px 10px',border:'1px solid #373A40'})}>{I.refresh(11)} リセット</button>
       </div>
     </div>
     {/* body */}
@@ -134,7 +134,7 @@ function CreatePage(){
         {/* LEFT */}
         <div>
           {/* source */}
-          <div style={S.card}><h3 style={S.h3}>ð ã½ã¼ã¹ã¢ã«ã¦ã³ã</h3>
+          <div style={S.card}><h3 style={S.h3}>📌 ソースアカウント</h3>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
               {[{h:'@free24store',n:'free24store',f:'12.5K'},{h:'@boost_official',n:'Boost Official',f:'8.2K'}].map(a=>
                 <button key={a.h} onClick={()=>setSrc(a.h)} style={{display:'flex',alignItems:'center',gap:10,padding:10,borderRadius:8,border:`1px solid ${src===a.h?'#5c7cfa':'#373A40'}`,background:src===a.h?'rgba(92,124,250,.08)':'#2C2E33',cursor:'pointer',color:'white',fontFamily:'inherit',fontSize:13,textAlign:'left'}}>
@@ -146,48 +146,48 @@ function CreatePage(){
           </div>
           {/* settings */}
           <div style={S.card}>
-            <h3 style={S.h3}><span style={{color:'#ffd43b'}}>{I.spark(15)}</span> çæè¨­å®</h3>
+            <h3 style={S.h3}><span style={{color:'#ffd43b'}}>{I.spark(15)}</span> 生成設定</h3>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
-              <div><label style={S.label}>ã³ã³ãã³ãã¿ã¤ã</label><select style={S.select}><option>ãã¤ã¼ã</option><option>ã¹ã¬ãã</option><option>ã­ã£ãã·ã§ã³</option></select></div>
-              <div><label style={S.label}>ãã¼ã³</label><select style={S.select}><option>ããã©ã«ãï¼ã¢ã«ã¦ã³ãæºæ ï¼</option><option>ã«ã¸ã¥ã¢ã«</option><option>ãã­ãã§ãã·ã§ãã«</option><option>ã¢ããã¼ã·ã§ã³</option></select></div>
+              <div><label style={S.label}>コンテンツタイプ</label><select style={S.select}><option>ツイート</option><option>スレッド</option><option>キャプション</option></select></div>
+              <div><label style={S.label}>トーン</label><select style={S.select}><option>デフォルト（アカウント準拠）</option><option>カジュアル</option><option>プロフェッショナル</option><option>モチベーション</option></select></div>
             </div>
-            <div style={{marginBottom:12}}><label style={S.label}>ãããã¯</label><input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="ä¾: AIããã¼ã±ãã£ã³ã°ãèµ·æ¥¼â¦" style={S.input}/></div>
+            <div style={{marginBottom:12}}><label style={S.label}>トピック</label><input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="例: AI、マーケティング、起楼…" style={S.input}/></div>
             <button onClick={doGen} disabled={genBusy} style={S.btn('linear-gradient(135deg,#5c7cfa,#4263eb)',{width:'100%',padding:'11px 0',fontSize:14,opacity:genBusy?.65:1,cursor:genBusy?'wait':'pointer'})}>
-              {genBusy?<><span className="spinner"/> AIçæä¸­â¦</>:<>{I.spark(15)} ã¯ã³ã¯ãªãã¯è¨äºçæ</>}
+              {genBusy?<><span className="spinner"/> AI生成中…</>:<>{I.spark(15)} ワンクリック記事生成</>}
             </button>
           </div>
           {/* content */}
           {content&&<div className="fade-in" style={{...S.card,borderColor:'rgba(92,124,250,.3)'}}>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-              <h3 style={{...S.h3,margin:0}}><span style={{color:'#748ffc'}}>{I.pen(14)}</span> çæã³ã³ãã³ã</h3>
+              <h3 style={{...S.h3,margin:0}}><span style={{color:'#748ffc'}}>{I.pen(14)}</span> 生成コンテンツ</h3>
               <div style={{display:'flex',gap:5}}>
-                <button onClick={doGen} style={S.btn('#2C2E33',{fontSize:11,padding:'3px 8px',border:'1px solid #373A40'})}>{I.refresh(10)} åçæ</button>
-                <button onClick={()=>{try{navigator.clipboard.writeText(content)}catch(e){}}} style={S.btn('#2C2E33',{fontSize:11,padding:'3px 8px',border:'1px solid #373A40'})}>{I.copy(10)} ã³ãã¼</button>
+                <button onClick={doGen} style={S.btn('#2C2E33',{fontSize:11,padding:'3px 8px',border:'1px solid #373A40'})}>{I.refresh(10)} 再生成</button>
+                <button onClick={()=>{try{navigator.clipboard.writeText(content)}catch(e){}}} style={S.btn('#2C2E33',{fontSize:11,padding:'3px 8px',border:'1px solid #373A40'})}>{I.copy(10)} コピー</button>
               </div>
             </div>
             <textarea value={content} onChange={e=>setContent(e.target.value)} rows={6} style={{...S.input,fontFamily:'monospace',lineHeight:1.7,resize:'vertical'}}/>
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:6}}>
-              <span style={{fontSize:11,color:'#909296'}}>{content.length} æå­</span>
+              <span style={{fontSize:11,color:'#909296'}}>{content.length} 文字</span>
               <div style={{display:'flex',gap:5}}>{tags.map((t,i)=><span key={i} style={S.badge('#748ffc')}>{t}</span>)}</div>
             </div>
           </div>}
           {/* video */}
           {content&&<div className="fade-in" style={S.card}>
-            <h3 style={S.h3}><span style={{color:'#b197fc'}}>{I.vid(15)}</span> ã¹ã¯ã­ã¼ã«ã·ã§ã¼ãåç»çæ</h3>
+            <h3 style={S.h3}><span style={{color:'#b197fc'}}>{I.vid(15)}</span> スクロールショート動画生成</h3>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:10}}>
-              {['scroll','fade','zoom'].map((s,i)=><button key={s} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,padding:10,borderRadius:8,border:`1px solid ${s==='scroll'?'#5c7cfa':'#373A40'}`,background:s==='scroll'?'rgba(92,124,250,.08)':'#2C2E33',cursor:'pointer',color:'white'}}><span style={{fontSize:22}}>{'ððð'[i]}</span><span style={{fontSize:11,textTransform:'capitalize'}}>{s}</span></button>)}
+              {['scroll','fade','zoom'].map((s,i)=><button key={s} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,padding:10,borderRadius:8,border:`1px solid ${s==='scroll'?'#5c7cfa':'#373A40'}`,background:s==='scroll'?'rgba(92,124,250,.08)':'#2C2E33',cursor:'pointer',color:'white'}}><span style={{fontSize:22}}>{'📜🌀🔍'[i]}</span><span style={{fontSize:11,textTransform:'capitalize'}}>{s}</span></button>)}
             </div>
             <div style={{display:'flex',alignItems:'center',gap:10,background:'#2C2E33',borderRadius:8,padding:10,marginBottom:10}}>
               <div style={{width:30,height:30,background:'#5c7cfa',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center'}}>{I.play(13)}</div>
-              <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>Upbeat Corporate</div><div style={{fontSize:11,color:'#909296'}}>0:15 Â· Royalty Free</div></div>
-              <span style={{fontSize:12,color:'#748ffc',cursor:'pointer'}}>å¤æ´</span>
+              <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>Upbeat Corporate</div><div style={{fontSize:11,color:'#909296'}}>0:15 · Royalty Free</div></div>
+              <span style={{fontSize:12,color:'#748ffc',cursor:'pointer'}}>変更</span>
             </div>
             <button onClick={doVid} disabled={vidSt==='proc'} style={S.btn('linear-gradient(135deg,#7950f2,#e64980)',{width:'100%',padding:'11px 0',fontSize:14,opacity:vidSt==='proc'?.65:1,cursor:vidSt==='proc'?'wait':'pointer'})}>
-              {vidSt==='proc'?<><span className="spinner"/> åç»çæä¸­â¦</>:vidSt==='ready'?<>{I.check(15)} åç»çæå®äº â</>:<>{I.vid(15)} ã¯ã³ã¯ãªãã¯åç»çæ</>}
+              {vidSt==='proc'?<><span className="spinner"/> 動画生成中…</>:vidSt==='ready'?<>{I.check(15)} 動画生成完了 ✓</>:<>{I.vid(15)} ワンクリック動画生成</>}
             </button>
             {vidSt==='ready'&&<div className="fade-in" style={{display:'flex',alignItems:'center',gap:12,marginTop:10}}>
               <div style={{width:50,height:86,background:'linear-gradient(135deg,#7950f2,#e64980)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>{I.play(18)}</div>
-              <div><div style={{fontSize:13,fontWeight:600}}>ã¹ã¯ã­ã¼ã«ã·ã§ã¼ãåç»</div><div style={{fontSize:11,color:'#909296',marginTop:2}}>1080Ã1920 | 15ç§ | MP4</div></div>
+              <div><div style={{fontSize:13,fontWeight:600}}>スクロールショート動画</div><div style={{fontSize:11,color:'#909296',marginTop:2}}>1080×1920 | 15秒 | MP4</div></div>
             </div>}
           </div>}
         </div>
@@ -195,7 +195,7 @@ function CreatePage(){
         <div>
           {/* platforms */}
           <div style={S.card}>
-            <h3 style={S.h3}><span style={{color:'#51cf66'}}>{I.send(14)}</span> åºç¨¿å</h3>
+            <h3 style={S.h3}><span style={{color:'#51cf66'}}>{I.send(14)}</span> 出稿先</h3>
             <div style={{display:'flex',flexDirection:'column',gap:7}}>
               {P.map(p=>{const st=pubSt[p.id];return <button key={p.id} onClick={()=>tog(p.id)} style={{display:'flex',alignItems:'center',gap:9,padding:9,borderRadius:8,border:`1px solid ${selP.includes(p.id)?'#5c7cfa':'#373A40'}`,background:selP.includes(p.id)?'rgba(92,124,250,.08)':'#2C2E33',cursor:'pointer',color:'white',fontFamily:'inherit',fontSize:13}}>
                 <div style={S.pdot(p.color)}>{p.label}</div>
@@ -207,20 +207,20 @@ function CreatePage(){
               </button>;})}
             </div>
             <div style={{marginTop:10,display:'flex',flexDirection:'column',gap:7}}>
-              <button onClick={()=>setSelP(P.map(p=>p.id))} style={S.btn('#2C2E33',{width:'100%',fontSize:11,border:'1px solid #373A40'})}>å¨ãã©ãããã©ã¼ã é¸æ</button>
+              <button onClick={()=>setSelP(P.map(p=>p.id))} style={S.btn('#2C2E33',{width:'100%',fontSize:11,border:'1px solid #373A40'})}>全プラットフォーム選択</button>
               <button onClick={doPub} disabled={!selP.length||pubBusy||!content} style={S.btn(selP.length&&content&&!pubBusy?'linear-gradient(135deg,#37b24d,#0ca678)':'#2C2E33',{width:'100%',padding:'11px 0',fontSize:14,opacity:!selP.length||!content?.45:1,cursor:!selP.length||pubBusy||!content?'not-allowed':'pointer'})}>
-                {pubBusy?<><span className="spinner"/> åºç¨¿ä¸­â¦</>:<>{I.send(14)} ä¸æ¬åºç¨¿ ({selP.length}ä»¶)</>}
+                {pubBusy?<><span className="spinner"/> 出稿中…</>:<>{I.send(14)} 一括出稿 ({selP.length}件)</>}
               </button>
             </div>
             <div style={{marginTop:10,borderTop:'1px solid #373A40',paddingTop:10}}>
-              <label style={{...S.label,display:'flex',alignItems:'center',gap:4}}>{I.clock(11)} äºç´æç¨¿</label>
+              <label style={{...S.label,display:'flex',alignItems:'center',gap:4}}>{I.clock(11)} 予約投稿</label>
               <input type="datetime-local" style={{...S.input,fontSize:11}}/>
             </div>
           </div>
           {/* history */}
           <div style={S.card}>
-            <h3 style={S.h3}>åºç¨¿å±¥æ­´</h3>
-            {hist.length===0?<p style={{fontSize:11,color:'#909296',textAlign:'center',padding:'14px 0'}}>ã¾ã åºç¨¿å±¥æ­´ãããã¾ãã</p>:
+            <h3 style={S.h3}>出稿履歴</h3>
+            {hist.length===0?<p style={{fontSize:11,color:'#909296',textAlign:'center',padding:'14px 0'}}>まだ出稿履歴がありません</p>:
             <div style={{maxHeight:180,overflowY:'auto'}}>{hist.map(h=><div key={h.id} style={{background:'#2C2E33',borderRadius:7,padding:8,marginBottom:5}}>
               <div style={{fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{h.t}</div>
               <div style={{display:'flex',gap:4,marginTop:3}}>{h.pl.map(pid=>{const pl=P.find(x=>x.id===pid);return <span key={pid} style={S.badge(pl?.color)}>{pl?.name}</span>;})}</div>
@@ -229,9 +229,9 @@ function CreatePage(){
           </div>
           {/* stats */}
           <div style={{...S.card,background:'linear-gradient(135deg,#25262b,#1A1B1E)'}}>
-            <h3 style={S.h3}>ä»æ¥ã®ãµããªã¼</h3>
+            <h3 style={S.h3}>今日のサマリー</h3>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
-              {[{l:'çææ°',v:'7',c:'#748ffc'},{l:'åºç¨¿æ°',v:'12',c:'#51cf66'},{l:'åç»æ°',v:'4',c:'#b197fc'},{l:'å°éæ°',v:'24.5K',c:'#ffd43b'}].map(s=>
+              {[{l:'生成数',v:'7',c:'#748ffc'},{l:'出稿数',v:'12',c:'#51cf66'},{l:'動画数',v:'4',c:'#b197fc'},{l:'到達数',v:'24.5K',c:'#ffd43b'}].map(s=>
                 <div key={s.l} style={{textAlign:'center',padding:8}}>
                   <div style={{fontSize:20,fontWeight:800,color:s.c}}>{s.v}</div>
                   <div style={{fontSize:10,color:'#909296',marginTop:2}}>{s.l}</div>
@@ -260,9 +260,9 @@ function AnalyticsPage(){
 
   return <div style={{height:'100%',display:'flex',flexDirection:'column'}}>
     <div style={S.topbar}>
-      <h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.chart(18)}</span> ã¯ã­ã¹ãã©ãããã©ã¼ã åæ</h2>
+      <h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.chart(18)}</span> クロスプラットフォーム分析</h2>
       <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:10}}>
-        <div style={{display:'flex',background:'#25262b',borderRadius:8,padding:2}}>{['7d','30d','90d'].map(p=><button key={p} onClick={()=>setPeriod(p)} style={{padding:'4px 12px',borderRadius:6,fontSize:11,fontWeight:600,border:'none',cursor:'pointer',background:period===p?'#5c7cfa':'transparent',color:period===p?'#fff':'#909296'}}>{p==='7d'?'7æ¥':p==='30d'?'30æ¥':'90æ¥'}</button>)}</div>
+        <div style={{display:'flex',background:'#25262b',borderRadius:8,padding:2}}>{['7d','30d','90d'].map(p=><button key={p} onClick={()=>setPeriod(p)} style={{padding:'4px 12px',borderRadius:6,fontSize:11,fontWeight:600,border:'none',cursor:'pointer',background:period===p?'#5c7cfa':'transparent',color:period===p?'#fff':'#909296'}}>{p==='7d'?'7日':p==='30d'?'30日':'90日'}</button>)}</div>
         <div style={{display:'flex',gap:5}}>{P.map(p=><button key={p.id} onClick={()=>tog(p.id)} style={{width:24,height:24,borderRadius:'50%',background:p.color,opacity:act.includes(p.id)?1:.25,border:act.includes(p.id)?'2px solid #fff':'2px solid transparent',cursor:'pointer',fontSize:8,color:'#fff',fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'}}>{p.label}</button>)}</div>
       </div>
     </div>
@@ -275,14 +275,14 @@ function AnalyticsPage(){
               <div style={S.pdot(PC[s.id],26)}>{P.find(p=>p.id===s.id)?.label}</div>
               <span style={{fontSize:12,fontWeight:700}}>{s.name}</span>
             </div>
-            {[['ãã©ã­ã¯ã¼',s.f,null],['æé·ç',s.g,s.pos?'#51cf66':'#ff6b6b'],['ã¤ã³ãã¬ãã·ã§ã³',s.imp,null],['ENGç',s.eng,PC[s.id]]].map(([l,v,c])=>
+            {[['フォロワー',s.f,null],['成長率',s.g,s.pos?'#51cf66':'#ff6b6b'],['インプレッション',s.imp,null],['ENG率',s.eng,PC[s.id]]].map(([l,v,c])=>
               <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'2px 0'}}><span style={{fontSize:11,color:'#909296'}}>{l}</span><span style={{fontSize:12,fontWeight:700,color:c||'#e9ecef'}}>{v}</span></div>)}
           </div>)}
         </div>
         {/* charts */}
         <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14,marginBottom:14}}>
           <div style={{...S.card,marginBottom:0}}>
-            <h3 style={S.h3}><span style={{color:'#748ffc'}}>{I.eye(14)}</span> ã¤ã³ãã¬ãã·ã§ã³æ¨ç§»</h3>
+            <h3 style={S.h3}><span style={{color:'#748ffc'}}>{I.eye(14)}</span> インプレッション推移</h3>
             <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#373A40"/>
@@ -298,16 +298,16 @@ function AnalyticsPage(){
             </ResponsiveContainer>
           </div>
           <div style={{...S.card,marginBottom:0}}>
-            <h3 style={S.h3}>ãªã¼ãåå¸</h3>
+            <h3 style={S.h3}>リーチ分布</h3>
             <ResponsiveContainer width="100%" height={190}>
               <PieChart><Pie data={pie} cx="50%" cy="50%" innerRadius={42} outerRadius={72} dataKey="value" label={({name,percent})=>`${name} ${(percent*100).toFixed(0)}%`}>{pie.map((e,i)=><Cell key={i} fill={e.fill}/>)}</Pie><Tooltip contentStyle={tt}/></PieChart>
             </ResponsiveContainer>
-            <div style={{textAlign:'center',fontSize:11,color:'#909296',marginTop:6}}>åè¨ãªã¼ã: 1.57M</div>
+            <div style={{textAlign:'center',fontSize:11,color:'#909296',marginTop:6}}>合計リーチ: 1.57M</div>
           </div>
         </div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
           <div style={{...S.card,marginBottom:0}}>
-            <h3 style={S.h3}><span style={{color:'#f06595'}}>{I.heart(14)}</span> ã¨ã³ã²ã¼ã¸ã¡ã³ã</h3>
+            <h3 style={S.h3}><span style={{color:'#f06595'}}>{I.heart(14)}</span> エンゲージメント</h3>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={data.slice(-14)}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#373A40"/>
@@ -323,7 +323,7 @@ function AnalyticsPage(){
             </ResponsiveContainer>
           </div>
           <div style={{...S.card,marginBottom:0}}>
-            <h3 style={S.h3}><span style={{color:'#ffd43b'}}>{I.cal(14)}</span> æé©æç¨¿æéå¸¯</h3>
+            <h3 style={S.h3}><span style={{color:'#ffd43b'}}>{I.cal(14)}</span> 最適投稿時間帯</h3>
             <ResponsiveContainer width="100%" height={230}>
               <BarChart data={hourly}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#373A40"/>
@@ -344,31 +344,31 @@ function AnalyticsPage(){
    PAGE : COMPETITOR
    ======================================================== */
 function CompetitorPage(){
-  const [comps]=useState([{id:1,h:'@competitor_a',n:'Aç¤¾',f:45200,g:5.2,e:4.8},{id:2,h:'@competitor_b',n:'Bç¤¾',f:32100,g:3.1,e:3.2},{id:3,h:'@competitor_c',n:'Cç¤¾',f:78500,g:8.7,e:6.1},{id:4,h:'@competitor_d',n:'Dç¤¾',f:125000,g:15.3,e:9.2}]);
+  const [comps]=useState([{id:1,h:'@competitor_a',n:'A社',f:45200,g:5.2,e:4.8},{id:2,h:'@competitor_b',n:'B社',f:32100,g:3.1,e:3.2},{id:3,h:'@competitor_c',n:'C社',f:78500,g:8.7,e:6.1},{id:4,h:'@competitor_d',n:'D社',f:125000,g:15.3,e:9.2}]);
   const me={h:'@free24store',f:12500,g:3.2,e:4.2};
   const colors=['#5c7cfa','#f06595','#51cf66','#ffd43b'];
-  const radar=[{m:'ãã©ã­ã¯ã¼',me:25,...Object.fromEntries(comps.map((c,i)=>[`c${i}`,Math.min(c.f/1500,100)]))},{m:'ENGç',me:me.e*10,...Object.fromEntries(comps.map((c,i)=>[`c${i}`,c.e*10]))},{m:'æé·ç',me:me.g*5,...Object.fromEntries(comps.map((c,i)=>[`c${i}`,c.g*5]))}];
+  const radar=[{m:'フォロワー',me:25,...Object.fromEntries(comps.map((c,i)=>[`c${i}`,Math.min(c.f/1500,100)]))},{m:'ENG率',me:me.e*10,...Object.fromEntries(comps.map((c,i)=>[`c${i}`,c.e*10]))},{m:'成長率',me:me.g*5,...Object.fromEntries(comps.map((c,i)=>[`c${i}`,c.g*5]))}];
   const growth=useMemo(()=>Array.from({length:30},(_,i)=>{const d=new Date(Date.now()-(29-i)*864e5);const r={date:`${d.getMonth()+1}/${d.getDate()}`,me:12500+i*13+Math.random()*200};comps.forEach((c,idx)=>{r[`c${idx}`]=c.f-(29-i)*(c.f*c.g/100/30)+Math.random()*c.f*.01;});return r;}),[]);
   const tt={backgroundColor:'#25262b',border:'1px solid #373A40',borderRadius:8,fontSize:11};
 
   return <div style={{height:'100%',display:'flex',flexDirection:'column'}}>
-    <div style={S.topbar}><h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.trend(18)}</span> ç«¶ååæ</h2></div>
+    <div style={S.topbar}><h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.trend(18)}</span> 競合分析</h2></div>
     <div style={{flex:1,overflowY:'auto',padding:18}}>
       <div style={{maxWidth:1200,margin:'0 auto'}}>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:14}}>
-          <div style={{...S.card,marginBottom:0}}><h3 style={S.h3}>ç·ååæ¯è¼ï¼ã¬ã¼ãã¼ï¼</h3>
+          <div style={{...S.card,marginBottom:0}}><h3 style={S.h3}>総合力比較（レーダー）</h3>
             <ResponsiveContainer width="100%" height={290}>
               <RadarChart data={radar}><PolarGrid stroke="#373A40"/><PolarAngleAxis dataKey="m" tick={{fontSize:11,fill:'#909296'}}/><PolarRadiusAxis tick={{fontSize:9,fill:'#5c5f66'}}/>
-                <Radar name="èªå" dataKey="me" stroke="#5c7cfa" fill="#5c7cfa" fillOpacity={.2} strokeWidth={2}/>
+                <Radar name="自分" dataKey="me" stroke="#5c7cfa" fill="#5c7cfa" fillOpacity={.2} strokeWidth={2}/>
                 {comps.slice(0,4).map((c,i)=><Radar key={c.id} name={c.n} dataKey={`c${i}`} stroke={colors[i]} fill={colors[i]} fillOpacity={.1} strokeWidth={1.5}/>)}
                 <Legend/><Tooltip contentStyle={tt}/>
               </RadarChart>
             </ResponsiveContainer>
           </div>
-          <div style={{...S.card,marginBottom:0}}><h3 style={S.h3}>ãã©ã­ã¯ã¼æ¨ç§»æ¯è¼</h3>
+          <div style={{...S.card,marginBottom:0}}><h3 style={S.h3}>フォロワー推移比較</h3>
             <ResponsiveContainer width="100%" height={290}>
               <LineChart data={growth}><CartesianGrid strokeDasharray="3 3" stroke="#373A40"/><XAxis dataKey="date" tick={{fontSize:10,fill:'#909296'}} interval={6}/><YAxis tick={{fontSize:10,fill:'#909296'}}/><Tooltip contentStyle={tt}/>
-                <Line type="monotone" dataKey="me" stroke="#5c7cfa" strokeWidth={2.5} dot={false} name="èªå"/>
+                <Line type="monotone" dataKey="me" stroke="#5c7cfa" strokeWidth={2.5} dot={false} name="自分"/>
                 {comps.slice(0,4).map((c,i)=><Line key={c.id} type="monotone" dataKey={`c${i}`} stroke={colors[i]} strokeWidth={1.5} dot={false} name={c.n}/>)}
                 <Legend/>
               </LineChart>
@@ -376,12 +376,12 @@ function CompetitorPage(){
           </div>
         </div>
         {/* table */}
-        <div style={{...S.card,marginBottom:0}}><h3 style={S.h3}>è©³ç´°æ¯è¼ãã¼ãã«</h3>
+        <div style={{...S.card,marginBottom:0}}><h3 style={S.h3}>詳細比較テーブル</h3>
           <table style={{width:'100%',fontSize:13,borderCollapse:'collapse'}}>
-            <thead><tr style={{borderBottom:'1px solid #373A40'}}>{['ã¢ã«ã¦ã³ã','ãã©ã­ã¯ã¼','æé·ç','ENGç'].map(h=><th key={h} style={{padding:'7px 6px',textAlign:h==='ã¢ã«ã¦ã³ã'?'left':'right',fontSize:11,color:'#909296',fontWeight:500}}>{h}</th>)}</tr></thead>
+            <thead><tr style={{borderBottom:'1px solid #373A40'}}>{['アカウント','フォロワー','成長率','ENG率'].map(h=><th key={h} style={{padding:'7px 6px',textAlign:h==='アカウント'?'left':'right',fontSize:11,color:'#909296',fontWeight:500}}>{h}</th>)}</tr></thead>
             <tbody>
               <tr style={{borderBottom:'1px solid rgba(55,58,64,.5)',background:'rgba(92,124,250,.03)'}}>
-                <td style={{padding:'7px 6px'}}><div style={{display:'flex',alignItems:'center',gap:6}}><div style={{width:18,height:18,background:'#5c7cfa',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:8,fontWeight:700}}>F</div>{me.h}<span style={S.badge('#748ffc')}>èªå</span></div></td>
+                <td style={{padding:'7px 6px'}}><div style={{display:'flex',alignItems:'center',gap:6}}><div style={{width:18,height:18,background:'#5c7cfa',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:8,fontWeight:700}}>F</div>{me.h}<span style={S.badge('#748ffc')}>自分</span></div></td>
                 <td style={{padding:'7px 6px',textAlign:'right',fontFamily:'monospace'}}>{me.f.toLocaleString()}</td>
                 <td style={{padding:'7px 6px',textAlign:'right',color:'#51cf66'}}>+{me.g}%</td>
                 <td style={{padding:'7px 6px',textAlign:'right',color:'#748ffc'}}>{me.e}%</td>
@@ -408,25 +408,25 @@ function SettingsPage(){
   const pls=[{id:'x',name:'X (Twitter)',color:'#1da1f2',on:true,acc:'@free24store'},{id:'instagram',name:'Instagram',color:'#E1306C',on:true,acc:'@free24store_ig'},{id:'tiktok',name:'TikTok',color:'#00f2ea',on:false},{id:'youtube',name:'YouTube',color:'#FF0000',on:true,acc:'free24store ch'}];
 
   return <div style={{height:'100%',display:'flex',flexDirection:'column'}}>
-    <div style={S.topbar}><h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.gear(18)}</span> è¨­å®</h2></div>
+    <div style={S.topbar}><h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.gear(18)}</span> 設定</h2></div>
     <div style={{flex:1,overflowY:'auto',padding:18}}>
       <div style={{maxWidth:660,margin:'0 auto'}}>
         <div style={{display:'flex',gap:3,background:'#25262b',borderRadius:10,padding:3,marginBottom:18}}>
-          {[['acc','SNSã¢ã«ã¦ã³ã'],['api','APIè¨­å®'],['prof','ãã­ãã£ã¼ã«']].map(([id,lb])=><button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:'8px 0',borderRadius:7,fontSize:12,fontWeight:600,border:'none',cursor:'pointer',background:tab===id?'#5c7cfa':'transparent',color:tab===id?'#fff':'#909296'}}>{lb}</button>)}
+          {[['acc','SNSアカウント'],['api','API設定'],['prof','プロフィール']].map(([id,lb])=><button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:'8px 0',borderRadius:7,fontSize:12,fontWeight:600,border:'none',cursor:'pointer',background:tab===id?'#5c7cfa':'transparent',color:tab===id?'#fff':'#909296'}}>{lb}</button>)}
         </div>
         {tab==='acc'&&pls.map(p=><div key={p.id} style={{...S.card,display:'flex',alignItems:'center',gap:14}}>
           <div style={{width:40,height:40,borderRadius:10,background:p.color+'20',display:'flex',alignItems:'center',justifyContent:'center',color:p.color,fontSize:13,fontWeight:700}}>{P.find(x=>x.id===p.id)?.label}</div>
-          <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600}}>{p.name}</div>{p.on?<div style={{fontSize:12,color:'#51cf66',display:'flex',alignItems:'center',gap:4,marginTop:2}}><div style={{width:5,height:5,background:'#51cf66',borderRadius:'50%'}}/>æ¥ç¶æ¸ã¿ â {p.acc}</div>:<div style={{fontSize:12,color:'#5c5f66'}}>æªæ¥ç¶</div>}</div>
-          <button style={S.btn(p.on?'rgba(255,107,107,.1)':'linear-gradient(135deg,#5c7cfa,#4263eb)',{fontSize:11,padding:'5px 12px',color:p.on?'#ff6b6b':'#fff'})}>{p.on?'è§£é¤':'æ¥ç¶'}</button>
+          <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600}}>{p.name}</div>{p.on?<div style={{fontSize:12,color:'#51cf66',display:'flex',alignItems:'center',gap:4,marginTop:2}}><div style={{width:5,height:5,background:'#51cf66',borderRadius:'50%'}}/>接続済み – {p.acc}</div>:<div style={{fontSize:12,color:'#5c5f66'}}>未接続</div>}</div>
+          <button style={S.btn(p.on?'rgba(255,107,107,.1)':'linear-gradient(135deg,#5c7cfa,#4263eb)',{fontSize:11,padding:'5px 12px',color:p.on?'#ff6b6b':'#fff'})}>{p.on?'解除':'接続'}</button>
         </div>)}
         {tab==='api'&&['OpenAI API Key','X API Key','Instagram App ID','TikTok Client Key','YouTube Client ID'].map(n=><div key={n} style={S.card}>
           <div style={{fontSize:14,fontWeight:600,marginBottom:8}}>{n}</div>
-          <div style={{display:'flex',gap:8}}><input type="password" placeholder="APIã­ã¼ãå¥åâ¦" style={{...S.input,flex:1}}/><button style={S.btn('linear-gradient(135deg,#5c7cfa,#4263eb)',{fontSize:12})}>ä¿å­</button></div>
+          <div style={{display:'flex',gap:8}}><input type="password" placeholder="APIキーを入力…" style={{...S.input,flex:1}}/><button style={S.btn('linear-gradient(135deg,#5c7cfa,#4263eb)',{fontSize:12})}>保存</button></div>
         </div>)}
         {tab==='prof'&&<div style={S.card}>
-          <div style={{marginBottom:10}}><label style={S.label}>åå</label><input defaultValue="é¦¬å ´åç¾©" style={S.input}/></div>
-          <div style={{marginBottom:14}}><label style={S.label}>ã¡ã¼ã«ã¢ãã¬ã¹</label><input defaultValue="free24store@gmail.com" style={S.input}/></div>
-          <button style={S.btn('linear-gradient(135deg,#5c7cfa,#4263eb)')}>ä¿å­</button>
+          <div style={{marginBottom:10}}><label style={S.label}>名前</label><input defaultValue="馬場和義" style={S.input}/></div>
+          <div style={{marginBottom:14}}><label style={S.label}>メールアドレス</label><input defaultValue="free24store@gmail.com" style={S.input}/></div>
+          <button style={S.btn('linear-gradient(135deg,#5c7cfa,#4263eb)')}>保存</button>
         </div>}
       </div>
     </div>
@@ -437,10 +437,10 @@ function SettingsPage(){
    MAIN APP
    ======================================================== */
 const NAV=[
-  {id:'create',label:'çæã»åºç¨¿',desc:'ã³ã³ãã³ãçæã¨ä¸æ¬åºç¨¿',icon:I.pen},
-  {id:'analytics',label:'æ¨ªæ­åæ',desc:'ã¯ã­ã¹ãã©ãããã©ã¼ã åæ',icon:I.chart},
-  {id:'competitors',label:'ç«¶ååæ',desc:'ç«¶åã¢ã«ã¦ã³ãåæ',icon:I.trend},
-  {id:'settings',label:'è¨­å®',desc:'ã¢ã«ã¦ã³ãã»APIè¨­å®',icon:I.gear},
+  {id:'create',label:'生成・出稿',desc:'コンテンツ生成と一括出稿',icon:I.pen},
+  {id:'analytics',label:'横断分析',desc:'クロスプラットフォーム分析',icon:I.chart},
+  {id:'competitors',label:'競合分析',desc:'競合アカウント分析',icon:I.trend},
+  {id:'settings',label:'設定',desc:'アカウント・API設定',icon:I.gear},
 ];
 const PAGES={create:CreatePage,analytics:AnalyticsPage,competitors:CompetitorPage,settings:SettingsPage};
 
@@ -472,32 +472,32 @@ function LoginPage({onLogin}){
   const doMasterLogin=async(e)=>{
     e&&e.preventDefault();setErr('');
     const code=pin.join('');
-    if(code.length<4){setErr('4æ¡ã®PINãå¥åãã¦ãã ãã');setShake(true);setTimeout(()=>setShake(false),500);return;}
+    if(code.length<4){setErr('4桁のPINを入力してください');setShake(true);setTimeout(()=>setShake(false),500);return;}
     setBusy(true);
     await new Promise(r=>setTimeout(r,800));
     if(code===MASTER_PIN){
-      onLogin({email:'master@free24store.com',name:'ãã¹ã¿ã¼ç®¡çè',plan:'master',role:'master'});
+      onLogin({email:'master@free24store.com',name:'マスター管理者',plan:'master',role:'master'});
     } else {
-      setErr('PINãæ­£ããããã¾ãã');setShake(true);setTimeout(()=>setShake(false),500);setPin(['','','','']);pinRefs[0].current?.focus();
+      setErr('PINが正しくありません');setShake(true);setTimeout(()=>setShake(false),500);setPin(['','','','']);pinRefs[0].current?.focus();
     }
     setBusy(false);
   };
 
   const doSubmit=async(e)=>{
     e.preventDefault(); setErr('');
-    if(!email||!pw||(mode==='register'&&!name)){setErr('å¨ã¦ã®é ç®ãå¥åãã¦ãã ãã');setShake(true);setTimeout(()=>setShake(false),500);return;}
-    if(pw.length<6){setErr('ãã¹ã¯ã¼ãã¯6æå­ä»¥ä¸ã§å¥åãã¦ãã ãã');setShake(true);setTimeout(()=>setShake(false),500);return;}
+    if(!email||!pw||(mode==='register'&&!name)){setErr('全ての項目を入力してください');setShake(true);setTimeout(()=>setShake(false),500);return;}
+    if(pw.length<6){setErr('パスワードは6文字以上で入力してください');setShake(true);setTimeout(()=>setShake(false),500);return;}
     setBusy(true);
     await new Promise(r=>setTimeout(r,1200));
     const users=JSON.parse(window.__users||'{}');
     if(mode==='register'){
-      if(users[email]){setErr('ãã®ã¡ã¼ã«ã¢ãã¬ã¹ã¯æ¢ã«ç»é²ããã¦ãã¾ã');setBusy(false);return;}
+      if(users[email]){setErr('このメールアドレスは既に登録されています');setBusy(false);return;}
       users[email]={name,pw,plan:'free',created:new Date().toISOString()};
       window.__users=JSON.stringify(users);
       onLogin({email,name,plan:'free',role:'user'});
     } else {
       const u=users[email];
-      if(!u||u.pw!==pw){setErr('ã¡ã¼ã«ã¢ãã¬ã¹ã¾ãã¯ãã¹ã¯ã¼ããæ­£ããããã¾ãã');setBusy(false);setShake(true);setTimeout(()=>setShake(false),500);return;}
+      if(!u||u.pw!==pw){setErr('メールアドレスまたはパスワードが正しくありません');setBusy(false);setShake(true);setTimeout(()=>setShake(false),500);return;}
       onLogin({email,name:u.name,plan:u.plan||'free',role:'user'});
     }
     setBusy(false);
@@ -523,63 +523,63 @@ function LoginPage({onLogin}){
       <div style={LS.form}>
         <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:32}}>
           <div style={{width:42,height:42,background:'linear-gradient(135deg,#5c7cfa,#7950f2)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'}}>{I.zap(22)}</div>
-          <div><div style={{fontSize:20,fontWeight:800}}>free24store<span style={{color:'#748ffc'}}>_boost</span></div><div style={{fontSize:11,color:'#909296'}}>SNSä¸æ¬åºç¨¿ & AIåç»çæ</div></div>
+          <div><div style={{fontSize:20,fontWeight:800}}>free24store<span style={{color:'#748ffc'}}>_boost</span></div><div style={{fontSize:11,color:'#909296'}}>SNS一括出稿 & AI動画生成</div></div>
         </div>
 
         {/* Auth type tabs */}
         <div style={{display:'flex',gap:6,marginBottom:24,background:'#1A1B1E',padding:4,borderRadius:10}}>
-          <button onClick={()=>{setAuthType('master');setErr('');setPin(['','','','']);}} style={{...LS.tab,...(authType==='master'?tabActive:tabInactive)}}>ð ãã¹ã¿ã¼</button>
-          <button onClick={()=>{setAuthType('user');setErr('');}} style={{...LS.tab,...(authType==='user'?tabActive:tabInactive)}}>ð¤ ä¸è¬ã¦ã¼ã¶ã¼</button>
+          <button onClick={()=>{setAuthType('master');setErr('');setPin(['','','','']);}} style={{...LS.tab,...(authType==='master'?tabActive:tabInactive)}}>🔑 マスター</button>
+          <button onClick={()=>{setAuthType('user');setErr('');}} style={{...LS.tab,...(authType==='user'?tabActive:tabInactive)}}>👤 一般ユーザー</button>
         </div>
 
         {authType==='master' ? <>
-          <h2 style={{fontSize:24,fontWeight:700,marginBottom:6}}>ãã¹ã¿ã¼ã­ã°ã¤ã³</h2>
-          <p style={{fontSize:13,color:'#909296',marginBottom:24}}>ç®¡çèPINã³ã¼ãï¼4æ¡ï¼ãå¥åãã¦ãã ãã</p>
+          <h2 style={{fontSize:24,fontWeight:700,marginBottom:6}}>マスターログイン</h2>
+          <p style={{fontSize:13,color:'#909296',marginBottom:24}}>管理者PINコード（4桁）を入力してください</p>
           <form onSubmit={doMasterLogin}>
             <div style={{display:'flex',gap:12,justifyContent:'center',marginBottom:16}}>
               {pin.map((d,i)=><input key={i} ref={pinRefs[i]} type="password" inputMode="numeric" maxLength={1} value={d} onChange={e=>handlePinChange(i,e.target.value)} onKeyDown={e=>handlePinKey(i,e)} style={{...LS.pinBox,...(d?{borderColor:'#5c7cfa'}:{})}} autoFocus={i===0}/>)}
             </div>
-            {err&&<div style={{...LS.inp,background:'rgba(255,107,107,.1)',border:'1px solid rgba(255,107,107,.3)',color:'#ff6b6b',marginBottom:12,animation:shake?'shake .4s':'none',padding:'10px 14px',fontSize:12,borderRadius:8,textAlign:'center'}}>â ï¸ {err}</div>}
+            {err&&<div style={{...LS.inp,background:'rgba(255,107,107,.1)',border:'1px solid rgba(255,107,107,.3)',color:'#ff6b6b',marginBottom:12,animation:shake?'shake .4s':'none',padding:'10px 14px',fontSize:12,borderRadius:8,textAlign:'center'}}>⚠️ {err}</div>}
             <button type="submit" disabled={busy} style={{...LS.btn,background:'linear-gradient(135deg,#e64980,#be4bdb)',opacity:busy?.7:1}}>
-              {busy?<><span className="spinner"/> èªè¨¼ä¸­â¦</>:'ãã¹ã¿ã¼ã­ã°ã¤ã³'}
+              {busy?<><span className="spinner"/> 認証中…</>:'マスターログイン'}
             </button>
           </form>
         </> : <>
-          <h2 style={{fontSize:24,fontWeight:700,marginBottom:6}}>{mode==='login'?'ãããããªãã':'ã¢ã«ã¦ã³ãä½æ'}</h2>
-          <p style={{fontSize:13,color:'#909296',marginBottom:24}}>{mode==='login'?'ã¢ã«ã¦ã³ãã«ã­ã°ã¤ã³ãã¦ç¶ãã¾ããã':'ç¡æã§å§ãã¾ããããã¯ã¬ã¸ããã«ã¼ãä¸è¦ã§ãã'}</p>
+          <h2 style={{fontSize:24,fontWeight:700,marginBottom:6}}>{mode==='login'?'おかえりなさい':'アカウント作成'}</h2>
+          <p style={{fontSize:13,color:'#909296',marginBottom:24}}>{mode==='login'?'アカウントにログインして続けましょう':'無料で始めましょう。クレジットカード不要です。'}</p>
           <form onSubmit={doSubmit}>
-            {mode==='register'&&<input value={name} onChange={e=>setName(e.target.value)} placeholder="ãåå" style={LS.inp}/>}
-            <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="ã¡ã¼ã«ã¢ãã¬ã¹" style={LS.inp}/>
-            <input type="password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="ãã¹ã¯ã¼ãï¼6æå­ä»¥ä¸ï¼" style={LS.inp}/>
-            {err&&<div style={{...LS.inp,background:'rgba(255,107,107,.1)',border:'1px solid rgba(255,107,107,.3)',color:'#ff6b6b',marginBottom:12,animation:shake?'shake .4s':'none',padding:'10px 14px',fontSize:12,borderRadius:8}}>â ï¸ {err}</div>}
+            {mode==='register'&&<input value={name} onChange={e=>setName(e.target.value)} placeholder="お名前" style={LS.inp}/>}
+            <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="メールアドレス" style={LS.inp}/>
+            <input type="password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="パスワード（6文字以上）" style={LS.inp}/>
+            {err&&<div style={{...LS.inp,background:'rgba(255,107,107,.1)',border:'1px solid rgba(255,107,107,.3)',color:'#ff6b6b',marginBottom:12,animation:shake?'shake .4s':'none',padding:'10px 14px',fontSize:12,borderRadius:8}}>⚠️ {err}</div>}
             <button type="submit" disabled={busy} style={{...LS.btn,background:'linear-gradient(135deg,#5c7cfa,#4263eb)',opacity:busy?.7:1}}>
-              {busy?<><span className="spinner"/> å¦çä¸­â¦</>:mode==='login'?'ã­ã°ã¤ã³':'ã¢ã«ã¦ã³ãä½æ'}
+              {busy?<><span className="spinner"/> 処理中…</>:mode==='login'?'ログイン':'アカウント作成'}
             </button>
           </form>
           <div style={{display:'flex',alignItems:'center',gap:10,margin:'18px 0'}}>
-            <div style={{flex:1,height:1,background:'#373A40'}}/><span style={{fontSize:11,color:'#909296'}}>ã¾ãã¯</span><div style={{flex:1,height:1,background:'#373A40'}}/>
+            <div style={{flex:1,height:1,background:'#373A40'}}/><span style={{fontSize:11,color:'#909296'}}>または</span><div style={{flex:1,height:1,background:'#373A40'}}/>
           </div>
           <button onClick={demoLogin} disabled={busy} style={{...LS.btn,background:'linear-gradient(135deg,#37b24d,#0ca678)',opacity:busy?.7:1,marginBottom:12}}>
-            {I.play(14)} ãã¢ã§ã«ã¦ã³ãã§ä½é¨ãã
+            {I.play(14)} デモェカウントで体験する
           </button>
           <button onClick={()=>{setMode(mode==='login'?'register':'login');setErr('');}} style={{...LS.btn,background:'transparent',border:'1px solid #373A40',fontSize:13,fontWeight:500}}>
-            {mode==='login'?'ã¢ã«ã¦ã³ãããæã¡ã§ãªãæ¹ã¯ãã¡ã':'æ¢ã«ã¢ã«ã¦ã³ãããæã¡ã®æ¹ã¯ãã¡ã'}
+            {mode==='login'?'アカウントをお持ちでない方はこちら':'既にアカウントをお持ちの方はこちら'}
           </button>
         </>}
-        <p style={{fontSize:10,color:'#5c5f66',textAlign:'center',marginTop:16}}>ã­ã°ã¤ã³ãããã¨ã§ãå©ç¨è¦ç´ã¨ãã©ã¤ãã·ã¼ããªã·ã¼ã«åæãããã®ã¨ã¿ãªããã¾ãã</p>
+        <p style={{fontSize:10,color:'#5c5f66',textAlign:'center',marginTop:16}}>ログインすることで、利用規約とプライバシーポリシーに同意したものとみなされます。</p>
       </div>
     </div>
     <div style={LS.right}>
       <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'radial-gradient(circle at 30% 40%,rgba(92,124,250,.15),transparent 60%),radial-gradient(circle at 70% 80%,rgba(121,80,242,.12),transparent 60%)'}}/>
       <div style={{position:'relative',zIndex:1,textAlign:'center',maxWidth:420,padding:40}}>
-        <div style={{fontSize:80,marginBottom:20}}>{authType==='master'?'ð¡ï¸':'ð'}</div>
-        <h3 style={{fontSize:22,fontWeight:800,marginBottom:12}}>{authType==='master'?<>ãã¹ã¿ã¼ç®¡çè<br/><span style={{background:'linear-gradient(135deg,#e64980,#be4bdb)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>ã»ã­ã¥ã¢ã¢ã¯ã»ã¹</span></>:<>4ã¤ã®SNSã<br/><span style={{background:'linear-gradient(135deg,#5c7cfa,#e64980)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>ã¯ã³ã¯ãªãã¯</span>ã§ç®¡ç</>}</h3>
-        <p style={{fontSize:13,color:'#909296',lineHeight:1.8}}>{authType==='master'?'å¨æ©è½ã»å¨ã¦ã¼ã¶ã¼ã®ç®¡çæ¨©é\nã·ã¹ãã è¨­å®ã»ãã©ã³ç®¡çã»ãã¼ã¿ã¨ã¯ã¹ãã¼ã':'Xã»Instagramã»TikTokã»YouTube\nAIè¨äºçæâåç»èªåçæâä¸æ¬åºç¨¿\nå¨ã¦ãã²ã¨ã¤ã®ããã·ã¥ãã¼ãã§å®çµ'}</p>
+        <div style={{fontSize:80,marginBottom:20}}>{authType==='master'?'🛡️':'🚀'}</div>
+        <h3 style={{fontSize:22,fontWeight:800,marginBottom:12}}>{authType==='master'?<>マスター管理者<br/><span style={{background:'linear-gradient(135deg,#e64980,#be4bdb)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>セキュアアクセス</span></>:<>4つのSNSを<br/><span style={{background:'linear-gradient(135deg,#5c7cfa,#e64980)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>ワンクリック</span>で管理</>}</h3>
+        <p style={{fontSize:13,color:'#909296',lineHeight:1.8}}>{authType==='master'?'全機能・全ユーザーの管理権限\nシステム設定・プラン管理・データエクスポート':'X・Instagram・TikTok・YouTube\nAI記事生成→動画自動生成→一括出稿\n全てがひとつのダッシュボードで完結'}</p>
         <div style={{display:'flex',justifyContent:'center',gap:12,marginTop:24}}>
           {P.map(p=><div key={p.id} style={{...S.pdot(p.color,36),fontSize:13}}>{p.label}</div>)}
         </div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14,marginTop:28}}>
-          {[{v:'50K+',l:'ã¢ã¯ãã£ãã¦ã¼ã¶ã¼'},{v:'2.4M',l:'æç¨¿æ°/æ'},{v:'98%',l:'ç¨¼åç'}].map(s=>
+          {[{v:'50K+',l:'アクティブユーザー'},{v:'2.4M',l:'投稿数/月'},{v:'98%',l:'稼働率'}].map(s=>
             <div key={s.l}><div style={{fontSize:20,fontWeight:800,color:'#748ffc'}}>{s.v}</div><div style={{fontSize:10,color:'#909296'}}>{s.l}</div></div>)}
         </div>
       </div>
@@ -612,11 +612,11 @@ function App(){
       {/* user info */}
       <div style={{margin:'0 7px 4px',padding:'8px 9px',borderRadius:7,display:'flex',alignItems:'center',gap:8,cursor:'pointer',border:'1px solid transparent'}} onClick={()=>setUser(null)}>
         <div style={{width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,#e64980,#7950f2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,flexShrink:0}}>{(user.name||'U')[0]}</div>
-        <div style={{flex:1,overflow:'hidden'}}><div style={{fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{user.name}</div><div style={{fontSize:9,color:'#909296'}}>ã­ã°ã¢ã¦ã</div></div>
+        <div style={{flex:1,overflow:'hidden'}}><div style={{fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{user.name}</div><div style={{fontSize:9,color:'#909296'}}>ログアウト</div></div>
       </div>
       <div style={{margin:'0 7px 10px',background:'linear-gradient(135deg,rgba(92,124,250,.08),rgba(121,80,242,.08))',border:'1px solid rgba(92,124,250,.18)',borderRadius:9,padding:9}}>
         <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:3}}><span style={{color:'#748ffc'}}>{I.spark(13)}</span><span style={{fontSize:10.5,fontWeight:700,color:'#748ffc'}}>{user.plan==='pro'?'PRO PLAN':'FREE PLAN'}</span></div>
-        <div style={{fontSize:9.5,color:'#909296'}}>{user.plan==='pro'?'å¨SNSç¡å¶éã»AIçæã»åç»ä½æ':'æ5åã¾ã§ç¡æã»ã¢ããã°ã¬ã¼ãã¯ãã¡ã'}</div>
+        <div style={{fontSize:9.5,color:'#909296'}}>{user.plan==='pro'?'全SNS無制限・AI生成・動画作成':'月5回まで無料・アップグレードはこちら'}</div>
       </div>
     </aside>
     <main style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}><Pg/></main>
