@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>free24store_boost</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/recharts@2.10.3/umd/Recharts.js"></script>
+<script crossorigin src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body,#root{height:100%;overflow:hidden}
+body{font-family:'Inter','Noto Sans JP',sans-serif;background:#1A1B1E;color:#e9ecef}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#25262b}::-webkit-scrollbar-thumb{background:#5c5f66;border-radius:3px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.fade-in{animation:fadeIn .35s ease-out}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .55s linear infinite;vertical-align:middle}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-type="module">
+/* ===== React hooks & Recharts ===== */
+const {useState,useMemo,useCallback,useRef,useEffect}=React;
+const RC=Recharts;
+const {AreaChart,Area,BarChart,Bar,LineChart,Line,PieChart,Pie,Cell,
+       RadarChart,Radar,PolarGrid,PolarAngleAxis,PolarRadiusAxis,
+       XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Legend}=RC;
+
+/* ===== tiny SVG icon helper (lucide not usable as React) ===== */
+const I={
+  zap:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>,
+  pen:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>,
+  chart:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>,
+  trend:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
+  gear:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v.18a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>,
+  spark:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5z"/></svg>,
+  vid:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>,
+  send:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9"/></svg>,
+  refresh:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>,
+  check:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+  alert:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+  copy:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>,
+  play:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="5 3 19 12 5 21"/></svg>,
+  clock:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+  eye:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
+  heart:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>,
+  cal:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+  plus:d=><svg width={d||16} height={d||16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+};
+
+/* ===== Colors / Platforms ===== */
+const P=[
+  {id:'x',name:'X',color:'#1da1f2',label:'ð'},
+  {id:'instagram',name:'Instagram',color:'#E1306C',label:'IG'},
+  {id:'tiktok',name:'TikTok',color:'#00f2ea',label:'TT'},
+  {id:'youtube',name:'YouTube',color:'#FF0000',label:'YT'},
+];
+const PC={x:'#1da1f2',instagram:'#E1306C',tiktok:'#00f2ea',youtube:'#FF0000'};
+
+/* ===== Shared styles ===== */
+const S={
+  card:{background:'#25262b',border:'1px solid #373A40',borderRadius:12,padding:16,marginBottom:14},
+  h3:{fontSize:13,fontWeight:600,marginBottom:10,display:'flex',alignItems:'center',gap:6},
+  topbar:{height:52,borderBottom:'1px solid #373A40',background:'rgba(20,21,23,.8)',backdropFilter:'blur(12px)',display:'flex',alignItems:'center',padding:'0 20px',gap:12,flexShrink:0},
+  topH:{fontSize:15,fontWeight:700,display:'flex',alignItems:'center',gap:8},
+  input:{width:'100%',background:'#2C2E33',border:'1px solid #5c5f66',borderRadius:8,padding:'7px 11px',color:'white',fontSize:13,outline:'none',fontFamily:'inherit'},
+  select:{width:'100%',background:'#2C2E33',border:'1px solid #5c5f66',borderRadius:8,padding:'7px 11px',color:'white',fontSize:13,fontFamily:'inherit'},
+  btn:(bg,extra)=>({display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,padding:'8px 16px',borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer',border:'none',background:bg||'#2C2E33',color:'white',fontFamily:'inherit',...extra}),
+  label:{display:'block',fontSize:11,color:'#909296',marginBottom:4},
+  pdot:(c,sz)=>({width:sz||28,height:sz||28,borderRadius:8,background:(c||'#5c7cfa')+'20',color:c||'#5c7cfa',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,flexShrink:0}),
+  badge:(c)=>({padding:'1px 7px',borderRadius:99,fontSize:9,fontWeight:600,background:(c||'#5c7cfa')+'30',color:c||'#5c7cfa'}),
+};
+
+/* ===== Data gen ===== */
+function genDaily(days){const d=[];for(let i=days;i>=0;i--){const dt=new Date(Date.now()-i*864e5);d.push({date:`${dt.getMonth()+1}/${dt.getDate()}`,x:~~(Math.random()*12e3+3e3),instagram:~~(Math.random()*8e3+2e3),tiktok:~~(Math.random()*15e3+5e3),youtube:~~(Math.random()*6e3+1e3),x_e:~~(Math.random()*600+100),ig_e:~~(Math.random()*400+80),tt_e:~~(Math.random()*800+200),yt_e:~~(Math.random()*300+50)});}return d;}
+
+/* ========================================================
+   PAGE : CREATE
+   ======================================================== */
+function CreatePage(){
+  const [step,setStep]=useState('gen');
+  const [src,setSrc]=useState('');
+  const [topic,setTopic]=useState('');
+  const [content,setContent]=useState('');
+  const [genBusy,setGenBusy]=useState(false);
+  const [vidSt,setVidSt]=useState('idle');
+  const [selP,setSelP]=useState([]);
+  const [pubSt,setPubSt]=useState({});
+  const [pubBusy,setPubBusy]=useState(false);
+  const [hist,setHist]=useState([]);
+
+  const doGen=async()=>{setGenBusy(true);await new Promise(r=>setTimeout(r,1600));
+    const pool=[
+      `AIæä»£ã®ãã¼ã±ãã£ã³ã°ã¯ãå±æÃãã¼ã¿ããã­ã¼ã\n\nãã©ã­ã¯ã¼ãæ±ãã¦ããã®ã¯å®ç§ãªæå ±ã§ã¯ãªããå±æã§ããã¹ãã¼ãªã¼ã\n\nãã¼ã¿åæã§æé©ãªã¿ã¤ãã³ã°ãè¦æ¥µããææã«é¿ãã³ã³ãã³ããå±ããã\n\n#ãã¼ã±ãã£ã³ã° #AI #SNSéç¨`,
+      `ãã¯ãããããã¾ãï¼\n\nä»æ¥ã®å­¦ã³: ãç¶ç¶ã¯åãªããã¯æ¬å½ã ã£ãã\n\n90æ¥éæ¯æ¥æç¨¿ãç¶ããçµæ:\nã»ãã©ã­ã¯ã¼ +3,200äºº\nã»ã¨ã³ã²ã¼ã¸ç 2.1% â 4.8%\nã»DMåãåãã é±30ä»¶\n\n#ææ´» #ç¶ç¶å`,
+      `ãä¿å­æ¨å¥¨ãSNSåç»ã§ä¼¸ã³ãã³ã5é¸\n\n1. æåã®1ç§ã§æ­¢ãã\n2. ãã­ããã¯å¤§ããå¤ªã\n3. BGMã¯æµè¡ããä½¿ã\n4. 15ç§ä»¥åã«ã¾ã¨ãã\n5. CTAãå¿ãå¥ãã\n\n#åç»ãã¼ã±ãã£ã³ã° #TikTok #Reels`,
+      `${topic||'ãã¸ãã¹'}ã«ããã¦æãå¤§åãªã®ã¯ãä¿¡é ¼ã®ç©ã¿éã­ãã\n\næ´¾æãªããºã¯ä¸ç¬ã§æ¶ããããæ¯æ¥ã®å°ããªä¾¡å¤æä¾ã¯ãã©ã­ã¯ã¼ã®å¿ã«æ®ãã\n\n#${topic||'ãã¸ãã¹'} #ãã©ã³ãã£ã³ã°`,
+    ];setContent(pool[~~(Math.random()*pool.length)]);setGenBusy(false);setStep('vid');};
+
+  const doVid=async()=>{setVidSt('proc');await new Promise(r=>setTimeout(r,2200));setVidSt('ready');setStep('pub');};
+
+  const doPub=async()=>{if(!selP.length)return;setPubBusy(true);const st={};selP.forEach(id=>{st[id]='pub';});setPubSt(st);
+    for(const id of selP){await new Promise(r=>setTimeout(r,700+Math.random()*1e3));setPubSt(p=>({...p,[id]:Math.random()>.1?'ok':'fail'}));}
+    setPubBusy(false);setHist(p=>[{id:Date.now(),t:content.substring(0,35)+'â¦',pl:selP,ts:new Date().toLocaleTimeString('ja-JP')},...p]);};
+
+  const tog=id=>setSelP(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
+  const reset=()=>{setStep('gen');setContent('');setVidSt('idle');setSelP([]);setPubSt({});setTopic('');};
+  const tags=content.match(/#[\w\u3000-\u9FFF]+/g)||[];
+  const stI=['gen','vid','pub'].indexOf(step);
+
+  return <div style={{height:'100%',display:'flex',flexDirection:'column'}}>
+    {/* top */}
+    <div style={S.topbar}>
+      <h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.spark(18)}</span> ã³ã³ãã³ãçæ & ä¸æ¬åºç¨¿</h2>
+      <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:10}}>
+        <div style={{display:'flex',alignItems:'center',gap:4}}>
+          {['gen','vid','pub'].map((s,i)=><React.Fragment key={s}>
+            {i>0&&<div style={{width:18,height:2,background:stI>=i?'#5c7cfa':'#373A40'}}/>}
+            <div style={{padding:'2px 10px',borderRadius:99,fontSize:11,fontWeight:600,background:step===s?'#5c7cfa':stI>i?'rgba(92,124,250,.2)':'#2C2E33',color:step===s?'#fff':stI>i?'#748ffc':'#909296'}}>{i+1} {['è¨äºçæ','åç»çæ','åºç¨¿'][i]}</div>
+          </React.Fragment>)}
+        </div>
+        <button onClick={reset} style={S.btn('#2C2E33',{fontSize:11,padding:'4px 10px',border:'1px solid #373A40'})}>{I.refresh(11)} ãªã»ãã</button>
+      </div>
+    </div>
+    {/* body */}
+    <div style={{flex:1,overflowY:'auto',padding:18}}>
+      <div style={{maxWidth:1060,margin:'0 auto',display:'grid',gridTemplateColumns:'2fr 1fr',gap:18}}>
+        {/* LEFT */}
+        <div>
+          {/* source */}
+          <div style={S.card}><h3 style={S.h3}>ð ã½ã¼ã¹ã¢ã«ã¦ã³ã</h3>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+              {[{h:'@free24store',n:'free24store',f:'12.5K'},{h:'@boost_official',n:'Boost Official',f:'8.2K'}].map(a=>
+                <button key={a.h} onClick={()=>setSrc(a.h)} style={{display:'flex',alignItems:'center',gap:10,padding:10,borderRadius:8,border:`1px solid ${src===a.h?'#5c7cfa':'#373A40'}`,background:src===a.h?'rgba(92,124,250,.08)':'#2C2E33',cursor:'pointer',color:'white',fontFamily:'inherit',fontSize:13,textAlign:'left'}}>
+                  <div style={{width:34,height:34,borderRadius:'50%',background:'linear-gradient(135deg,#5c7cfa,#7950f2)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:14,flexShrink:0}}>{a.n[0]}</div>
+                  <div><div style={{fontWeight:600}}>{a.h}</div><div style={{fontSize:11,color:'#909296'}}>{a.f} followers</div></div>
+                  {src===a.h&&<span style={{marginLeft:'auto',color:'#748ffc'}}>{I.check(15)}</span>}
+                </button>)}
+            </div>
+          </div>
+          {/* settings */}
+          <div style={S.card}>
+            <h3 style={S.h3}><span style={{color:'#ffd43b'}}>{I.spark(15)}</span> çæè¨­å®</h3>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+              <div><label style={S.label}>ã³ã³ãã³ãã¿ã¤ã</label><select style={S.select}><option>ãã¤ã¼ã</option><option>ã¹ã¬ãã</option><option>ã­ã£ãã·ã§ã³</option></select></div>
+              <div><label style={S.label}>ãã¼ã³</label><select style={S.select}><option>ããã©ã«ãï¼ã¢ã«ã¦ã³ãæºæ ï¼</option><option>ã«ã¸ã¥ã¢ã«</option><option>ãã­ãã§ãã·ã§ãã«</option><option>ã¢ããã¼ã·ã§ã³</option></select></div>
+            </div>
+            <div style={{marginBottom:12}}><label style={S.label}>ãããã¯</label><input value={topic} onChange={e=>setTopic(e.target.value)} placeholder="ä¾: AIããã¼ã±ãã£ã³ã°ãèµ·æ¥¼â¦" style={S.input}/></div>
+            <button onClick={doGen} disabled={genBusy} style={S.btn('linear-gradient(135deg,#5c7cfa,#4263eb)',{width:'100%',padding:'11px 0',fontSize:14,opacity:genBusy?.65:1,cursor:genBusy?'wait':'pointer'})}>
+              {genBusy?<><span className="spinner"/> AIçæä¸­â¦</>:<>{I.spark(15)} ã¯ã³ã¯ãªãã¯è¨äºçæ</>}
+            </button>
+          </div>
+          {/* content */}
+          {content&&<div className="fade-in" style={{...S.card,borderColor:'rgba(92,124,250,.3)'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+              <h3 style={{...S.h3,margin:0}}><span style={{color:'#748ffc'}}>{I.pen(14)}</span> çæã³ã³ãã³ã</h3>
+              <div style={{display:'flex',gap:5}}>
+                <button onClick={doGen} style={S.btn('#2C2E33',{fontSize:11,padding:'3px 8px',border:'1px solid #373A40'})}>{I.refresh(10)} åçæ</button>
+                <button onClick={()=>{try{navigator.clipboard.writeText(content)}catch(e){}}} style={S.btn('#2C2E33',{fontSize:11,padding:'3px 8px',border:'1px solid #373A40'})}>{I.copy(10)} ã³ãã¼</button>
+              </div>
+            </div>
+            <textarea value={content} onChange={e=>setContent(e.target.value)} rows={6} style={{...S.input,fontFamily:'monospace',lineHeight:1.7,resize:'vertical'}}/>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:6}}>
+              <span style={{fontSize:11,color:'#909296'}}>{content.length} æå­</span>
+              <div style={{display:'flex',gap:5}}>{tags.map((t,i)=><span key={i} style={S.badge('#748ffc')}>{t}</span>)}</div>
+            </div>
+          </div>}
+          {/* video */}
+          {content&&<div className="fade-in" style={S.card}>
+            <h3 style={S.h3}><span style={{color:'#b197fc'}}>{I.vid(15)}</span> ã¹ã¯ã­ã¼ã«ã·ã§ã¼ãåç»çæ</h3>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:10}}>
+              {['scroll','fade','zoom'].map((s,i)=><button key={s} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,padding:10,borderRadius:8,border:`1px solid ${s==='scroll'?'#5c7cfa':'#373A40'}`,background:s==='scroll'?'rgba(92,124,250,.08)':'#2C2E33',cursor:'pointer',color:'white'}}><span style={{fontSize:22}}>{'ððð'[i]}</span><span style={{fontSize:11,textTransform:'capitalize'}}>{s}</span></button>)}
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:10,background:'#2C2E33',borderRadius:8,padding:10,marginBottom:10}}>
+              <div style={{width:30,height:30,background:'#5c7cfa',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center'}}>{I.play(13)}</div>
+              <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600}}>Upbeat Corporate</div><div style={{fontSize:11,color:'#909296'}}>0:15 Â· Royalty Free</div></div>
+              <span style={{fontSize:12,color:'#748ffc',cursor:'pointer'}}>å¤æ´</span>
+            </div>
+            <button onClick={doVid} disabled={vidSt==='proc'} style={S.btn('linear-gradient(135deg,#7950f2,#e64980)',{width:'100%',padding:'11px 0',fontSize:14,opacity:vidSt==='proc'?.65:1,cursor:vidSt==='proc'?'wait':'pointer'})}>
+              {vidSt==='proc'?<><span className="spinner"/> åç»çæä¸­â¦</>:vidSt==='ready'?<>{I.check(15)} åç»çæå®äº â</>:<>{I.vid(15)} ã¯ã³ã¯ãªãã¯åç»çæ</>}
+            </button>
+            {vidSt==='ready'&&<div className="fade-in" style={{display:'flex',alignItems:'center',gap:12,marginTop:10}}>
+              <div style={{width:50,height:86,background:'linear-gradient(135deg,#7950f2,#e64980)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>{I.play(18)}</div>
+              <div><div style={{fontSize:13,fontWeight:600}}>ã¹ã¯ã­ã¼ã«ã·ã§ã¼ãåç»</div><div style={{fontSize:11,color:'#909296',marginTop:2}}>1080Ã1920 | 15ç§ | MP4</div></div>
+            </div>}
+          </div>}
+        </div>
+        {/* RIGHT */}
+        <div>
+          {/* platforms */}
+          <div style={S.card}>
+            <h3 style={S.h3}><span style={{color:'#51cf66'}}>{I.send(14)}</span> åºç¨¿å</h3>
+            <div style={{display:'flex',flexDirection:'column',gap:7}}>
+              {P.map(p=>{const st=pubSt[p.id];return <button key={p.id} onClick={()=>tog(p.id)} style={{display:'flex',alignItems:'center',gap:9,padding:9,borderRadius:8,border:`1px solid ${selP.includes(p.id)?'#5c7cfa':'#373A40'}`,background:selP.includes(p.id)?'rgba(92,124,250,.08)':'#2C2E33',cursor:'pointer',color:'white',fontFamily:'inherit',fontSize:13}}>
+                <div style={S.pdot(p.color)}>{p.label}</div>
+                <span style={{flex:1,textAlign:'left'}}>{p.name}</span>
+                {st==='pub'&&<span className="spinner"/>}
+                {st==='ok'&&<span style={{color:'#51cf66'}}>{I.check(15)}</span>}
+                {st==='fail'&&<span style={{color:'#ff6b6b'}}>{I.alert(15)}</span>}
+                {!st&&selP.includes(p.id)&&<span style={{color:'#748ffc'}}>{I.check(15)}</span>}
+              </button>;})}
+            </div>
+            <div style={{marginTop:10,display:'flex',flexDirection:'column',gap:7}}>
+              <button onClick={()=>setSelP(P.map(p=>p.id))} style={S.btn('#2C2E33',{width:'100%',fontSize:11,border:'1px solid #373A40'})}>å¨ãã©ãããã©ã¼ã é¸æ</button>
+              <button onClick={doPub} disabled={!selP.length||pubBusy||!content} style={S.btn(selP.length&&content&&!pubBusy?'linear-gradient(135deg,#37b24d,#0ca678)':'#2C2E33',{width:'100%',padding:'11px 0',fontSize:14,opacity:!selP.length||!content?.45:1,cursor:!selP.length||pubBusy||!content?'not-allowed':'pointer'})}>
+                {pubBusy?<><span className="spinner"/> åºç¨¿ä¸­â¦</>:<>{I.send(14)} ä¸æ¬åºç¨¿ ({selP.length}ä»¶)</>}
+              </button>
+            </div>
+            <div style={{marginTop:10,borderTop:'1px solid #373A40',paddingTop:10}}>
+              <label style={{...S.label,display:'flex',alignItems:'center',gap:4}}>{I.clock(11)} äºç´æç¨¿</label>
+              <input type="datetime-local" style={{...S.input,fontSize:11}}/>
+            </div>
+          </div>
+          {/* history */}
+          <div style={S.card}>
+            <h3 style={S.h3}>åºç¨¿å±¥æ­´</h3>
+            {hist.length===0?<p style={{fontSize:11,color:'#909296',textAlign:'center',padding:'14px 0'}}>ã¾ã åºç¨¿å±¥æ­´ãããã¾ãã</p>:
+            <div style={{maxHeight:180,overflowY:'auto'}}>{hist.map(h=><div key={h.id} style={{background:'#2C2E33',borderRadius:7,padding:8,marginBottom:5}}>
+              <div style={{fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{h.t}</div>
+              <div style={{display:'flex',gap:4,marginTop:3}}>{h.pl.map(pid=>{const pl=P.find(x=>x.id===pid);return <span key={pid} style={S.badge(pl?.color)}>{pl?.name}</span>;})}</div>
+              <div style={{fontSize:10,color:'#909296',marginTop:3}}>{h.ts}</div>
+            </div>)}</div>}
+          </div>
+          {/* stats */}
+          <div style={{...S.card,background:'linear-gradient(135deg,#25262b,#1A1B1E)'}}>
+            <h3 style={S.h3}>ä»æ¥ã®ãµããªã¼</h3>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
+              {[{l:'çææ°',v:'7',c:'#748ffc'},{l:'åºç¨¿æ°',v:'12',c:'#51cf66'},{l:'åç»æ°',v:'4',c:'#b197fc'},{l:'å°éæ°',v:'24.5K',c:'#ffd43b'}].map(s=>
+                <div key={s.l} style={{textAlign:'center',padding:8}}>
+                  <div style={{fontSize:20,fontWeight:800,color:s.c}}>{s.v}</div>
+                  <div style={{fontSize:10,color:'#909296',marginTop:2}}>{s.l}</div>
+                </div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ========================================================
+   PAGE : ANALYTICS
+   ======================================================== */
+function AnalyticsPage(){
+  const [period,setPeriod]=useState('30d');
+  const [act,setAct]=useState(['x','instagram','tiktok','youtube']);
+  const days=period==='7d'?7:period==='30d'?30:90;
+  const data=useMemo(()=>genDaily(days),[days]);
+  const tog=id=>setAct(p=>p.includes(id)?p.filter(x=>x!==id):[...p,id]);
+  const stats=[{id:'x',name:'X (Twitter)',f:'12.5K',g:'+3.2%',imp:'342K',eng:'4.2%',pos:true},{id:'instagram',name:'Instagram',f:'8.7K',g:'+5.8%',imp:'215K',eng:'5.1%',pos:true},{id:'tiktok',name:'TikTok',f:'23.1K',g:'+12.4%',imp:'890K',eng:'7.3%',pos:true},{id:'youtube',name:'YouTube',f:'5.2K',g:'-0.3%',imp:'125K',eng:'3.8%',pos:false}];
+  const pie=[{name:'X',value:342e3,fill:PC.x},{name:'IG',value:215e3,fill:PC.instagram},{name:'TT',value:890e3,fill:PC.tiktok},{name:'YT',value:125e3,fill:PC.youtube}];
+  const hourly=Array.from({length:24},(_,h)=>({hour:`${h}:00`,eng:~~(Math.sin(h/24*Math.PI*2-Math.PI/2)*300+400+Math.random()*100)}));
+  const tt={backgroundColor:'#25262b',border:'1px solid #373A40',borderRadius:8,fontSize:11};
+
+  return <div style={{height:'100%',display:'flex',flexDirection:'column'}}>
+    <div style={S.topbar}>
+      <h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.chart(18)}</span> ã¯ã­ã¹ãã©ãããã©ã¼ã åæ</h2>
+      <div style={{marginLeft:'auto',display:'flex',alignItems:'center',gap:10}}>
+        <div style={{display:'flex',background:'#25262b',borderRadius:8,padding:2}}>{['7d','30d','90d'].map(p=><button key={p} onClick={()=>setPeriod(p)} style={{padding:'4px 12px',borderRadius:6,fontSize:11,fontWeight:600,border:'none',cursor:'pointer',background:period===p?'#5c7cfa':'transparent',color:period===p?'#fff':'#909296'}}>{p==='7d'?'7æ¥':p==='30d'?'30æ¥':'90æ¥'}</button>)}</div>
+        <div style={{display:'flex',gap:5}}>{P.map(p=><button key={p.id} onClick={()=>tog(p.id)} style={{width:24,height:24,borderRadius:'50%',background:p.color,opacity:act.includes(p.id)?1:.25,border:act.includes(p.id)?'2px solid #fff':'2px solid transparent',cursor:'pointer',fontSize:8,color:'#fff',fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'}}>{p.label}</button>)}</div>
+      </div>
+    </div>
+    <div style={{flex:1,overflowY:'auto',padding:18}}>
+      <div style={{maxWidth:1200,margin:'0 auto'}}>
+        {/* stat cards */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10,marginBottom:14}}>
+          {stats.map(s=><div key={s.id} style={{...S.card,marginBottom:0,borderLeft:`3px solid ${PC[s.id]}`}}>
+            <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:10}}>
+              <div style={S.pdot(PC[s.id],26)}>{P.find(p=>p.id===s.id)?.label}</div>
+              <span style={{fontSize:12,fontWeight:700}}>{s.name}</span>
+            </div>
+            {[['ãã©ã­ã¯ã¼',s.f,null],['æé·ç',s.g,s.pos?'#51cf66':'#ff6b6b'],['ã¤ã³ãã¬ãã·ã§ã³',s.imp,null],['ENGç',s.eng,PC[s.id]]].map(([l,v,c])=>
+              <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'2px 0'}}><span style={{fontSize:11,color:'#909296'}}>{l}</span><span style={{fontSize:12,fontWeight:700,color:c||'#e9ecef'}}>{v}</span></div>)}
+          </div>)}
+        </div>
+        {/* charts */}
+        <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:14,marginBottom:14}}>
+          <div style={{...S.card,marginBottom:0}}>
+            <h3 style={S.h3}><span style={{color:'#748ffc'}}>{I.eye(14)}</span> ã¤ã³ãã¬ãã·ã§ã³æ¨ç§»</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#373A40"/>
+                <XAxis dataKey="date" tick={{fontSize:10,fill:'#909296'}} interval={~~(days/8)}/>
+                <YAxis tick={{fontSize:10,fill:'#909296'}}/>
+                <Tooltip contentStyle={tt}/>
+                {act.includes('x')&&<Area type="monotone" dataKey="x" stroke={PC.x} fill={PC.x+'20'} name="X"/>}
+                {act.includes('instagram')&&<Area type="monotone" dataKey="instagram" stroke={PC.instagram} fill={PC.instagram+'20'} name="IG"/>}
+                {act.includes('tiktok')&&<Area type="monotone" dataKey="tiktok" stroke={PC.tiktok} fill={PC.tiktok+'20'} name="TT"/>}
+                {act.includes('youtube')&&<Area type="monotone" dataKey="youtube" stroke={PC.youtube} fill={PC.youtube+'20'} name="YT"/>}
+                <Legend/>
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{...S.card,marginBottom:0}}>
+            <h3 style={S.h3}>ãªã¼ãåå¸</h3>
+            <ResponsiveContainer width="100%" height={190}>
+              <PieChart><Pie data={pie} cx="50%" cy="50%" innerRadius={42} outerRadius={72} dataKey="value" label={({name,percent})=>`${name} ${(percent*100).toFixed(0)}%`}>{pie.map((e,i)=><Cell key={i} fill={e.fill}/>)}</Pie><Tooltip contentStyle={tt}/></PieChart>
+            </ResponsiveContainer>
+            <div style={{textAlign:'center',fontSize:11,color:'#909296',marginTop:6}}>åè¨ãªã¼ã: 1.57M</div>
+          </div>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+          <div style={{...S.card,marginBottom:0}}>
+            <h3 style={S.h3}><span style={{color:'#f06595'}}>{I.heart(14)}</span> ã¨ã³ã²ã¼ã¸ã¡ã³ã</h3>
+            <ResponsiveContainer width="100%" height={230}>
+              <BarChart data={data.slice(-14)}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#373A40"/>
+                <XAxis dataKey="date" tick={{fontSize:10,fill:'#909296'}}/>
+                <YAxis tick={{fontSize:10,fill:'#909296'}}/>
+                <Tooltip contentStyle={tt}/>
+                {act.includes('x')&&<Bar dataKey="x_e" fill={PC.x} name="X" radius={[2,2,0,0]}/>}
+                {act.includes('instagram')&&<Bar dataKey="ig_e" fill={PC.instagram} name="IG" radius={[2,2,0,0]}/>}
+                {act.includes('tiktok')&&<Bar dataKey="tt_e" fill={PC.tiktok} name="TT" radius={[2,2,0,0]}/>}
+                {act.includes('youtube')&&<Bar dataKey="yt_e" fill={PC.youtube} name="YT" radius={[2,2,0,0]}/>}
+                <Legend/>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{...S.card,marginBottom:0}}>
+            <h3 style={S.h3}><span style={{color:'#ffd43b'}}>{I.cal(14)}</span> æé©æç¨¿æéå¸¯</h3>
+            <ResponsiveContainer width="100%" height={230}>
+              <BarChart data={hourly}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#373A40"/>
+                <XAxis dataKey="hour" tick={{fontSize:9,fill:'#909296'}} interval={3}/>
+                <YAxis tick={{fontSize:10,fill:'#909296'}}/>
+                <Tooltip contentStyle={tt}/>
+                <Bar dataKey="eng" name="ENG" radius={[3,3,0,0]}>{hourly.map((e,i)=><Cell key={i} fill={e.eng>500?'#5c7cfa':e.eng>350?'#748ffc':'#373A40'}/>)}</Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ========================================================
+   PAGE : COMPETITOR
+   ======================================================== */
+function CompetitorPage(){
+  const [comps]=useState([{id:1,h:'@competitor_a',n:'Aç¤¾',f:45200,g:5.2,e:4.8},{id:2,h:'@competitor_b',n:'Bç¤¾',f:32100,g:3.1,e:3.2},{id:3,h:'@competitor_c',n:'Cç¤¾',f:78500,g:8.7,e:6.1},{id:4,h:'@competitor_d',n:'Dç¤¾',f:125000,g:15.3,e:9.2}]);
+  const me={h:'@free24store',f:12500,g:3.2,e:4.2};
+  const colors=['#5c7cfa','#f06595','#51cf66','#ffd43b'];
+  const radar=[{m:'ãã©ã­ã¯ã¼',me:25,...Object.fromEntries(comps.map((c,i)=>[`c${i}`,Math.min(c.f/1500,100)]))},{m:'ENGç',me:me.e*10,...Object.fromEntries(comps.map((c,i)=>[`c${i}`,c.e*10]))},{m:'æé·ç',me:me.g*5,...Object.fromEntries(comps.map((c,i)=>[`c${i}`,c.g*5]))}];
+  const growth=useMemo(()=>Array.from({length:30},(_,i)=>{const d=new Date(Date.now()-(29-i)*864e5);const r={date:`${d.getMonth()+1}/${d.getDate()}`,me:12500+i*13+Math.random()*200};comps.forEach((c,idx)=>{r[`c${idx}`]=c.f-(29-i)*(c.f*c.g/100/30)+Math.random()*c.f*.01;});return r;}),[]);
+  const tt={backgroundColor:'#25262b',border:'1px solid #373A40',borderRadius:8,fontSize:11};
+
+  return <div style={{height:'100%',display:'flex',flexDirection:'column'}}>
+    <div style={S.topbar}><h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.trend(18)}</span> ç«¶ååæ</h2></div>
+    <div style={{flex:1,overflowY:'auto',padding:18}}>
+      <div style={{maxWidth:1200,margin:'0 auto'}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:14}}>
+          <div style={{...S.card,marginBottom:0}}><h3 style={S.h3}>ç·ååæ¯è¼ï¼ã¬ã¼ãã¼ï¼</h3>
+            <ResponsiveContainer width="100%" height={290}>
+              <RadarChart data={radar}><PolarGrid stroke="#373A40"/><PolarAngleAxis dataKey="m" tick={{fontSize:11,fill:'#909296'}}/><PolarRadiusAxis tick={{fontSize:9,fill:'#5c5f66'}}/>
+                <Radar name="èªå" dataKey="me" stroke="#5c7cfa" fill="#5c7cfa" fillOpacity={.2} strokeWidth={2}/>
+                {comps.slice(0,4).map((c,i)=><Radar key={c.id} name={c.n} dataKey={`c${i}`} stroke={colors[i]} fill={colors[i]} fillOpacity={.1} strokeWidth={1.5}/>)}
+                <Legend/><Tooltip contentStyle={tt}/>
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{...S.card,marginBottom:0}}><h3 style={S.h3}>ãã©ã­ã¯ã¼æ¨ç§»æ¯è¼</h3>
+            <ResponsiveContainer width="100%" height={290}>
+              <LineChart data={growth}><CartesianGrid strokeDasharray="3 3" stroke="#373A40"/><XAxis dataKey="date" tick={{fontSize:10,fill:'#909296'}} interval={6}/><YAxis tick={{fontSize:10,fill:'#909296'}}/><Tooltip contentStyle={tt}/>
+                <Line type="monotone" dataKey="me" stroke="#5c7cfa" strokeWidth={2.5} dot={false} name="èªå"/>
+                {comps.slice(0,4).map((c,i)=><Line key={c.id} type="monotone" dataKey={`c${i}`} stroke={colors[i]} strokeWidth={1.5} dot={false} name={c.n}/>)}
+                <Legend/>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        {/* table */}
+        <div style={{...S.card,marginBottom:0}}><h3 style={S.h3}>è©³ç´°æ¯è¼ãã¼ãã«</h3>
+          <table style={{width:'100%',fontSize:13,borderCollapse:'collapse'}}>
+            <thead><tr style={{borderBottom:'1px solid #373A40'}}>{['ã¢ã«ã¦ã³ã','ãã©ã­ã¯ã¼','æé·ç','ENGç'].map(h=><th key={h} style={{padding:'7px 6px',textAlign:h==='ã¢ã«ã¦ã³ã'?'left':'right',fontSize:11,color:'#909296',fontWeight:500}}>{h}</th>)}</tr></thead>
+            <tbody>
+              <tr style={{borderBottom:'1px solid rgba(55,58,64,.5)',background:'rgba(92,124,250,.03)'}}>
+                <td style={{padding:'7px 6px'}}><div style={{display:'flex',alignItems:'center',gap:6}}><div style={{width:18,height:18,background:'#5c7cfa',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:8,fontWeight:700}}>F</div>{me.h}<span style={S.badge('#748ffc')}>èªå</span></div></td>
+                <td style={{padding:'7px 6px',textAlign:'right',fontFamily:'monospace'}}>{me.f.toLocaleString()}</td>
+                <td style={{padding:'7px 6px',textAlign:'right',color:'#51cf66'}}>+{me.g}%</td>
+                <td style={{padding:'7px 6px',textAlign:'right',color:'#748ffc'}}>{me.e}%</td>
+              </tr>
+              {comps.map((c,i)=><tr key={c.id} style={{borderBottom:'1px solid rgba(55,58,64,.5)'}}>
+                <td style={{padding:'7px 6px'}}><div style={{display:'flex',alignItems:'center',gap:6}}><div style={{width:18,height:18,borderRadius:'50%',background:colors[i]+'30',color:colors[i],display:'flex',alignItems:'center',justifyContent:'center',fontSize:8,fontWeight:700}}>{c.n[0]}</div>{c.h}</div></td>
+                <td style={{padding:'7px 6px',textAlign:'right',fontFamily:'monospace'}}>{c.f.toLocaleString()}</td>
+                <td style={{padding:'7px 6px',textAlign:'right',color:c.g>0?'#51cf66':'#ff6b6b'}}>{c.g>0?'+':''}{c.g.toFixed(1)}%</td>
+                <td style={{padding:'7px 6px',textAlign:'right',color:colors[i]}}>{c.e.toFixed(1)}%</td>
+              </tr>)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ========================================================
+   PAGE : SETTINGS
+   ======================================================== */
+function SettingsPage(){
+  const [tab,setTab]=useState('acc');
+  const pls=[{id:'x',name:'X (Twitter)',color:'#1da1f2',on:true,acc:'@free24store'},{id:'instagram',name:'Instagram',color:'#E1306C',on:true,acc:'@free24store_ig'},{id:'tiktok',name:'TikTok',color:'#00f2ea',on:false},{id:'youtube',name:'YouTube',color:'#FF0000',on:true,acc:'free24store ch'}];
+
+  return <div style={{height:'100%',display:'flex',flexDirection:'column'}}>
+    <div style={S.topbar}><h2 style={S.topH}><span style={{color:'#748ffc'}}>{I.gear(18)}</span> è¨­å®</h2></div>
+    <div style={{flex:1,overflowY:'auto',padding:18}}>
+      <div style={{maxWidth:660,margin:'0 auto'}}>
+        <div style={{display:'flex',gap:3,background:'#25262b',borderRadius:10,padding:3,marginBottom:18}}>
+          {[['acc','SNSã¢ã«ã¦ã³ã'],['api','APIè¨­å®'],['prof','ãã­ãã£ã¼ã«']].map(([id,lb])=><button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:'8px 0',borderRadius:7,fontSize:12,fontWeight:600,border:'none',cursor:'pointer',background:tab===id?'#5c7cfa':'transparent',color:tab===id?'#fff':'#909296'}}>{lb}</button>)}
+        </div>
+        {tab==='acc'&&pls.map(p=><div key={p.id} style={{...S.card,display:'flex',alignItems:'center',gap:14}}>
+          <div style={{width:40,height:40,borderRadius:10,background:p.color+'20',display:'flex',alignItems:'center',justifyContent:'center',color:p.color,fontSize:13,fontWeight:700}}>{P.find(x=>x.id===p.id)?.label}</div>
+          <div style={{flex:1}}><div style={{fontSize:14,fontWeight:600}}>{p.name}</div>{p.on?<div style={{fontSize:12,color:'#51cf66',display:'flex',alignItems:'center',gap:4,marginTop:2}}><div style={{width:5,height:5,background:'#51cf66',borderRadius:'50%'}}/>æ¥ç¶æ¸ã¿ â {p.acc}</div>:<div style={{fontSize:12,color:'#5c5f66'}}>æªæ¥ç¶</div>}</div>
+          <button style={S.btn(p.on?'rgba(255,107,107,.1)':'linear-gradient(135deg,#5c7cfa,#4263eb)',{fontSize:11,padding:'5px 12px',color:p.on?'#ff6b6b':'#fff'})}>{p.on?'è§£é¤':'æ¥ç¶'}</button>
+        </div>)}
+        {tab==='api'&&['OpenAI API Key','X API Key','Instagram App ID','TikTok Client Key','YouTube Client ID'].map(n=><div key={n} style={S.card}>
+          <div style={{fontSize:14,fontWeight:600,marginBottom:8}}>{n}</div>
+          <div style={{display:'flex',gap:8}}><input type="password" placeholder="APIã­ã¼ãå¥åâ¦" style={{...S.input,flex:1}}/><button style={S.btn('linear-gradient(135deg,#5c7cfa,#4263eb)',{fontSize:12})}>ä¿å­</button></div>
+        </div>)}
+        {tab==='prof'&&<div style={S.card}>
+          <div style={{marginBottom:10}}><label style={S.label}>åå</label><input defaultValue="é¦¬å ´åç¾©" style={S.input}/></div>
+          <div style={{marginBottom:14}}><label style={S.label}>ã¡ã¼ã«ã¢ãã¬ã¹</label><input defaultValue="free24store@gmail.com" style={S.input}/></div>
+          <button style={S.btn('linear-gradient(135deg,#5c7cfa,#4263eb)')}>ä¿å­</button>
+        </div>}
+      </div>
+    </div>
+  </div>;
+}
+
+/* ========================================================
+   MAIN APP
+   ======================================================== */
+const NAV=[
+  {id:'create',label:'çæã»åºç¨¿',desc:'ã³ã³ãã³ãçæã¨ä¸æ¬åºç¨¿',icon:I.pen},
+  {id:'analytics',label:'æ¨ªæ­åæ',desc:'ã¯ã­ã¹ãã©ãããã©ã¼ã åæ',icon:I.chart},
+  {id:'competitors',label:'ç«¶ååæ',desc:'ç«¶åã¢ã«ã¦ã³ãåæ',icon:I.trend},
+  {id:'settings',label:'è¨­å®',desc:'ã¢ã«ã¦ã³ãã»APIè¨­å®',icon:I.gear},
+];
+const PAGES={create:CreatePage,analytics:AnalyticsPage,competitors:CompetitorPage,settings:SettingsPage};
+
+/* ========================================================
+   LOGIN / REGISTER PAGE
+   ======================================================== */
+function LoginPage({onLogin}){
+  const MASTER_PIN='2424';
+  const [authType,setAuthType]=useState('user'); // 'master' or 'user'
+  const [mode,setMode]=useState('login');
+  const [email,setEmail]=useState('');
+  const [pw,setPw]=useState('');
+  const [name,setName]=useState('');
+  const [pin,setPin]=useState(['','','','']);
+  const [busy,setBusy]=useState(false);
+  const [err,setErr]=useState('');
+  const [shake,setShake]=useState(false);
+  const pinRefs=[useRef(null),useRef(null),useRef(null),useRef(null)];
+
+  const handlePinChange=(idx,val)=>{
+    if(!/^\d*$/.test(val))return;
+    const np=[...pin];np[idx]=val.slice(-1);setPin(np);setErr('');
+    if(val&&idx<3)pinRefs[idx+1].current?.focus();
+  };
+  const handlePinKey=(idx,e)=>{
+    if(e.key==='Backspace'&&!pin[idx]&&idx>0)pinRefs[idx-1].current?.focus();
+  };
+
+  const doMasterLogin=async(e)=>{
+    e&&e.preventDefault();setErr('');
+    const code=pin.join('');
+    if(code.length<4){setErr('4æ¡ã®PINãå¥åãã¦ãã ãã');setShake(true);setTimeout(()=>setShake(false),500);return;}
+    setBusy(true);
+    await new Promise(r=>setTimeout(r,800));
+    if(code===MASTER_PIN){
+      onLogin({email:'master@free24store.com',name:'ãã¹ã¿ã¼ç®¡çè',plan:'master',role:'master'});
+    } else {
+      setErr('PINãæ­£ããããã¾ãã');setShake(true);setTimeout(()=>setShake(false),500);setPin(['','','','']);pinRefs[0].current?.focus();
+    }
+    setBusy(false);
+  };
+
+  const doSubmit=async(e)=>{
+    e.preventDefault(); setErr('');
+    if(!email||!pw||(mode==='register'&&!name)){setErr('å¨ã¦ã®é ç®ãå¥åãã¦ãã ãã');setShake(true);setTimeout(()=>setShake(false),500);return;}
+    if(pw.length<6){setErr('ãã¹ã¯ã¼ãã¯6æå­ä»¥ä¸ã§å¥åãã¦ãã ãã');setShake(true);setTimeout(()=>setShake(false),500);return;}
+    setBusy(true);
+    await new Promise(r=>setTimeout(r,1200));
+    const users=JSON.parse(window.__users||'{}');
+    if(mode==='register'){
+      if(users[email]){setErr('ãã®ã¡ã¼ã«ã¢ãã¬ã¹ã¯æ¢ã«ç»é²ããã¦ãã¾ã');setBusy(false);return;}
+      users[email]={name,pw,plan:'free',created:new Date().toISOString()};
+      window.__users=JSON.stringify(users);
+      onLogin({email,name,plan:'free',role:'user'});
+    } else {
+      const u=users[email];
+      if(!u||u.pw!==pw){setErr('ã¡ã¼ã«ã¢ãã¬ã¹ã¾ãã¯ãã¹ã¯ã¼ããæ­£ããããã¾ãã');setBusy(false);setShake(true);setTimeout(()=>setShake(false),500);return;}
+      onLogin({email,name:u.name,plan:u.plan||'free',role:'user'});
+    }
+    setBusy(false);
+  };
+  const demoLogin=async()=>{setBusy(true);await new Promise(r=>setTimeout(r,800));onLogin({email:'demo@free24store.com',name:'Demo User',plan:'pro',role:'user'});};
+
+  const LS={
+    wrap:{display:'flex',height:'100vh',background:'#0d0e10'},
+    left:{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:40,background:'linear-gradient(135deg,#0d0e10 0%,#141517 50%,#1A1B1E 100%)'},
+    right:{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',background:'linear-gradient(135deg,#5c7cfa22,#7950f222)',position:'relative',overflow:'hidden'},
+    form:{width:'100%',maxWidth:380},
+    inp:{width:'100%',background:'#25262b',border:'1px solid #373A40',borderRadius:10,padding:'12px 14px',color:'white',fontSize:14,outline:'none',fontFamily:'inherit',marginBottom:12,transition:'border .2s'},
+    btn:{width:'100%',padding:'13px 0',borderRadius:10,fontSize:15,fontWeight:700,cursor:'pointer',border:'none',color:'white',fontFamily:'inherit',transition:'transform .15s,opacity .15s'},
+    tab:{flex:1,padding:'10px 0',borderRadius:8,fontSize:13,fontWeight:600,cursor:'pointer',border:'none',fontFamily:'inherit',transition:'all .2s'},
+    pinBox:{width:56,height:60,background:'#25262b',border:'1px solid #373A40',borderRadius:12,color:'white',fontSize:24,fontWeight:700,textAlign:'center',outline:'none',fontFamily:'inherit',transition:'border .2s'},
+  };
+
+  const tabActive={background:'linear-gradient(135deg,#5c7cfa,#4263eb)',color:'white'};
+  const tabInactive={background:'transparent',color:'#909296',border:'1px solid #373A40'};
+
+  return <div style={LS.wrap}>
+    <div style={LS.left}>
+      <div style={LS.form}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:32}}>
+          <div style={{width:42,height:42,background:'linear-gradient(135deg,#5c7cfa,#7950f2)',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'}}>{I.zap(22)}</div>
+          <div><div style={{fontSize:20,fontWeight:800}}>free24store<span style={{color:'#748ffc'}}>_boost</span></div><div style={{fontSize:11,color:'#909296'}}>SNSä¸æ¬åºç¨¿ & AIåç»çæ</div></div>
+        </div>
+
+        {/* Auth type tabs */}
+        <div style={{display:'flex',gap:6,marginBottom:24,background:'#1A1B1E',padding:4,borderRadius:10}}>
+          <button onClick={()=>{setAuthType('master');setErr('');setPin(['','','','']);}} style={{...LS.tab,...(authType==='master'?tabActive:tabInactive)}}>ð ãã¹ã¿ã¼</button>
+          <button onClick={()=>{setAuthType('user');setErr('');}} style={{...LS.tab,...(authType==='user'?tabActive:tabInactive)}}>ð¤ ä¸è¬ã¦ã¼ã¶ã¼</button>
+        </div>
+
+        {authType==='master' ? <>
+          <h2 style={{fontSize:24,fontWeight:700,marginBottom:6}}>ãã¹ã¿ã¼ã­ã°ã¤ã³</h2>
+          <p style={{fontSize:13,color:'#909296',marginBottom:24}}>ç®¡çèPINã³ã¼ãï¼4æ¡ï¼ãå¥åãã¦ãã ãã</p>
+          <form onSubmit={doMasterLogin}>
+            <div style={{display:'flex',gap:12,justifyContent:'center',marginBottom:16}}>
+              {pin.map((d,i)=><input key={i} ref={pinRefs[i]} type="password" inputMode="numeric" maxLength={1} value={d} onChange={e=>handlePinChange(i,e.target.value)} onKeyDown={e=>handlePinKey(i,e)} style={{...LS.pinBox,...(d?{borderColor:'#5c7cfa'}:{})}} autoFocus={i===0}/>)}
+            </div>
+            {err&&<div style={{...LS.inp,background:'rgba(255,107,107,.1)',border:'1px solid rgba(255,107,107,.3)',color:'#ff6b6b',marginBottom:12,animation:shake?'shake .4s':'none',padding:'10px 14px',fontSize:12,borderRadius:8,textAlign:'center'}}>â ï¸ {err}</div>}
+            <button type="submit" disabled={busy} style={{...LS.btn,background:'linear-gradient(135deg,#e64980,#be4bdb)',opacity:busy?.7:1}}>
+              {busy?<><span className="spinner"/> èªè¨¼ä¸­â¦</>:'ãã¹ã¿ã¼ã­ã°ã¤ã³'}
+            </button>
+          </form>
+        </> : <>
+          <h2 style={{fontSize:24,fontWeight:700,marginBottom:6}}>{mode==='login'?'ãããããªãã':'ã¢ã«ã¦ã³ãä½æ'}</h2>
+          <p style={{fontSize:13,color:'#909296',marginBottom:24}}>{mode==='login'?'ã¢ã«ã¦ã³ãã«ã­ã°ã¤ã³ãã¦ç¶ãã¾ããã':'ç¡æã§å§ãã¾ããããã¯ã¬ã¸ããã«ã¼ãä¸è¦ã§ãã'}</p>
+          <form onSubmit={doSubmit}>
+            {mode==='register'&&<input value={name} onChange={e=>setName(e.target.value)} placeholder="ãåå" style={LS.inp}/>}
+            <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="ã¡ã¼ã«ã¢ãã¬ã¹" style={LS.inp}/>
+            <input type="password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="ãã¹ã¯ã¼ãï¼6æå­ä»¥ä¸ï¼" style={LS.inp}/>
+            {err&&<div style={{...LS.inp,background:'rgba(255,107,107,.1)',border:'1px solid rgba(255,107,107,.3)',color:'#ff6b6b',marginBottom:12,animation:shake?'shake .4s':'none',padding:'10px 14px',fontSize:12,borderRadius:8}}>â ï¸ {err}</div>}
+            <button type="submit" disabled={busy} style={{...LS.btn,background:'linear-gradient(135deg,#5c7cfa,#4263eb)',opacity:busy?.7:1}}>
+              {busy?<><span className="spinner"/> å¦çä¸­â¦</>:mode==='login'?'ã­ã°ã¤ã³':'ã¢ã«ã¦ã³ãä½æ'}
+            </button>
+          </form>
+          <div style={{display:'flex',alignItems:'center',gap:10,margin:'18px 0'}}>
+            <div style={{flex:1,height:1,background:'#373A40'}}/><span style={{fontSize:11,color:'#909296'}}>ã¾ãã¯</span><div style={{flex:1,height:1,background:'#373A40'}}/>
+          </div>
+          <button onClick={demoLogin} disabled={busy} style={{...LS.btn,background:'linear-gradient(135deg,#37b24d,#0ca678)',opacity:busy?.7:1,marginBottom:12}}>
+            {I.play(14)} ãã¢ã§ã«ã¦ã³ãã§ä½é¨ãã
+          </button>
+          <button onClick={()=>{setMode(mode==='login'?'register':'login');setErr('');}} style={{...LS.btn,background:'transparent',border:'1px solid #373A40',fontSize:13,fontWeight:500}}>
+            {mode==='login'?'ã¢ã«ã¦ã³ãããæã¡ã§ãªãæ¹ã¯ãã¡ã':'æ¢ã«ã¢ã«ã¦ã³ãããæã¡ã®æ¹ã¯ãã¡ã'}
+          </button>
+        </>}
+        <p style={{fontSize:10,color:'#5c5f66',textAlign:'center',marginTop:16}}>ã­ã°ã¤ã³ãããã¨ã§ãå©ç¨è¦ç´ã¨ãã©ã¤ãã·ã¼ããªã·ã¼ã«åæãããã®ã¨ã¿ãªããã¾ãã</p>
+      </div>
+    </div>
+    <div style={LS.right}>
+      <div style={{position:'absolute',top:0,left:0,right:0,bottom:0,background:'radial-gradient(circle at 30% 40%,rgba(92,124,250,.15),transparent 60%),radial-gradient(circle at 70% 80%,rgba(121,80,242,.12),transparent 60%)'}}/>
+      <div style={{position:'relative',zIndex:1,textAlign:'center',maxWidth:420,padding:40}}>
+        <div style={{fontSize:80,marginBottom:20}}>{authType==='master'?'ð¡ï¸':'ð'}</div>
+        <h3 style={{fontSize:22,fontWeight:800,marginBottom:12}}>{authType==='master'?<>ãã¹ã¿ã¼ç®¡çè<br/><span style={{background:'linear-gradient(135deg,#e64980,#be4bdb)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>ã»ã­ã¥ã¢ã¢ã¯ã»ã¹</span></>:<>4ã¤ã®SNSã<br/><span style={{background:'linear-gradient(135deg,#5c7cfa,#e64980)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>ã¯ã³ã¯ãªãã¯</span>ã§ç®¡ç</>}</h3>
+        <p style={{fontSize:13,color:'#909296',lineHeight:1.8}}>{authType==='master'?'å¨æ©è½ã»å¨ã¦ã¼ã¶ã¼ã®ç®¡çæ¨©é\nã·ã¹ãã è¨­å®ã»ãã©ã³ç®¡çã»ãã¼ã¿ã¨ã¯ã¹ãã¼ã':'Xã»Instagramã»TikTokã»YouTube\nAIè¨äºçæâåç»èªåçæâä¸æ¬åºç¨¿\nå¨ã¦ãã²ã¨ã¤ã®ããã·ã¥ãã¼ãã§å®çµ'}</p>
+        <div style={{display:'flex',justifyContent:'center',gap:12,marginTop:24}}>
+          {P.map(p=><div key={p.id} style={{...S.pdot(p.color,36),fontSize:13}}>{p.label}</div>)}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14,marginTop:28}}>
+          {[{v:'50K+',l:'ã¢ã¯ãã£ãã¦ã¼ã¶ã¼'},{v:'2.4M',l:'æç¨¿æ°/æ'},{v:'98%',l:'ç¨¼åç'}].map(s=>
+            <div key={s.l}><div style={{fontSize:20,fontWeight:800,color:'#748ffc'}}>{s.v}</div><div style={{fontSize:10,color:'#909296'}}>{s.l}</div></div>)}
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ========================================================
+   MAIN APP (with auth wrapper)
+   ======================================================== */
+function App(){
+  const [user,setUser]=useState(null);
+  const [page,setPage]=useState('create');
+  const Pg=PAGES[page];
+  if(!user) return <LoginPage onLogin={setUser}/>;
+  return <div style={{display:'flex',height:'100vh',overflow:'hidden'}}>
+    {/* sidebar */}
+    <aside style={{width:224,background:'#141517',borderRight:'1px solid #373A40',display:'flex',flexDirection:'column',flexShrink:0}}>
+      <div style={{height:52,display:'flex',alignItems:'center',padding:'0 12px',borderBottom:'1px solid #373A40',gap:8}}>
+        <div style={{width:30,height:30,background:'linear-gradient(135deg,#5c7cfa,#7950f2)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{I.zap(16)}</div>
+        <div style={{fontWeight:700,fontSize:13}}>free24store<span style={{color:'#748ffc'}}>_boost</span></div>
+      </div>
+      <nav style={{flex:1,padding:7,display:'flex',flexDirection:'column',gap:2}}>
+        {NAV.map(({id,label,desc,icon:Ic})=>
+          <div key={id} onClick={()=>setPage(id)} style={{display:'flex',alignItems:'center',gap:9,padding:'7px 9px',borderRadius:7,cursor:'pointer',border:page===id?'1px solid rgba(92,124,250,.2)':'1px solid transparent',background:page===id?'rgba(92,124,250,.13)':'transparent',color:page===id?'#748ffc':'#C1C2C5',transition:'all .15s'}}>
+            <span style={{flexShrink:0}}>{Ic(17)}</span>
+            <div style={{display:'flex',flexDirection:'column'}}><span style={{fontSize:12.5,fontWeight:500}}>{label}</span><small style={{fontSize:9.5,color:'#909296'}}>{desc}</small></div>
+          </div>)}
+      </nav>
+      {/* user info */}
+      <div style={{margin:'0 7px 4px',padding:'8px 9px',borderRadius:7,display:'flex',alignItems:'center',gap:8,cursor:'pointer',border:'1px solid transparent'}} onClick={()=>setUser(null)}>
+        <div style={{width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,#e64980,#7950f2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,flexShrink:0}}>{(user.name||'U')[0]}</div>
+        <div style={{flex:1,overflow:'hidden'}}><div style={{fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{user.name}</div><div style={{fontSize:9,color:'#909296'}}>ã­ã°ã¢ã¦ã</div></div>
+      </div>
+      <div style={{margin:'0 7px 10px',background:'linear-gradient(135deg,rgba(92,124,250,.08),rgba(121,80,242,.08))',border:'1px solid rgba(92,124,250,.18)',borderRadius:9,padding:9}}>
+        <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:3}}><span style={{color:'#748ffc'}}>{I.spark(13)}</span><span style={{fontSize:10.5,fontWeight:700,color:'#748ffc'}}>{user.plan==='pro'?'PRO PLAN':'FREE PLAN'}</span></div>
+        <div style={{fontSize:9.5,color:'#909296'}}>{user.plan==='pro'?'å¨SNSç¡å¶éã»AIçæã»åç»ä½æ':'æ5åã¾ã§ç¡æã»ã¢ããã°ã¬ã¼ãã¯ãã¡ã'}</div>
+      </div>
+    </aside>
+    <main style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}><Pg/></main>
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
